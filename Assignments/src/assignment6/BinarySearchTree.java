@@ -466,34 +466,35 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
             // PrintWriter(FileWriter) will write output to a file
             PrintWriter output = new PrintWriter(new FileWriter(filename));
             Integer dl = 1;
-            Integer dr = 5 * (root.height() + 1) * (root.height() + 1);
+            Integer dr = 5000 * (root.height() + 1) * (root.height() + 1);
             ArrayList<String>[] rankArray = new ArrayList[root.height() + 1];
             int depth = 0;
 
             // print header to graph and set 'strict' which does not allow more than 1 edge between the two same vertices
-            output.println("// " + randList + "\n\n\n");
+//            output.println("// " + randList + "\n\n\n");
             output.println("strict digraph BST{\n\n");
             // set attributes
             output.println("center=true");  // centers the graph
-            output.println("ranksep=equally");   // sets distance between levels to 0.4"
-//            output.println("nodesep=0.35");   // sets distance between nodes on the same level, uncomment as desired
-//            output.println("outputorder=\"nodefirst\""); // causes nodes to be set first on graph, helps with overlap
-//            output.println("packmode=\"node\"");  // acts similar to outputorder above
-//            output.println("pack=true");
-//            output.println("spline=\"true\"");  // stile of connections (edges) between vertices
+            output.println("ranksep=\"1.0\"");   // sets distance between levels to 0.4"
+            output.println("outputorder=\"nodefirst\""); // causes nodes to be set first on graph, helps with overlap
+            output.println("page=\"8.5,11\""); // causes nodes to be set first on graph, helps with overlap
+            output.println("orientation=portrait"); // causes nodes to be set first on graph, helps with overlap
+            output.println("margin=0.5"); // causes nodes to be set first on graph, helps with overlap
+
+
 
 //            output.println("size=\"10,7.5\""); // sets image ratio (image height/width), 0.5 seems to work good
-            output.println("ratio=expand"); // sets image ratio (image height/width), 0.5 seems to work good
-//            output.println("ordering=out"); // tells dot.exe to keep the left to right child node ordering as in file
-            output.println("dpi=150"); // tells dot.exe to keep the left to right child node ordering as in file
-//            output.println("node [fontsize=18, fontname=helvetica]"); // tells dot.exe to keep the left to right child node ordering as in file
+            output.println("ratio=auto"); // sets image ratio (image height/width), 0.5 seems to work good
+            output.println("ordering=out"); // tells dot.exe to keep the left to right child node ordering as in file
+            output.println("dpi=300"); // tells dot.exe to keep the left to right child node ordering as in file
+            output.println("node [fontsize=18, fontname=Helvetica]"); // tells dot.exe to keep the left to right child node ordering as in file
 
             // if the BST is not null, call the recursive method to create the .dot file
             if (root != null)
                 writeDotRecursive(root, output, dl, dr, rankArray, depth);
 
             for (int i = 0; i < root.height(); i++) {
-                output.println("{ rank=same; ");
+                output.print("{ rank=same; ");
                 for (String e : rankArray[i])
                     output.print(" \"" + e + "\"; ");
                 output.print("}\n");
@@ -510,52 +511,69 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
 
     // Recursive method that writeDot() driver method calls for writing the tree to a dot file
     private void writeDotRecursive(BinaryNode n, PrintWriter output, Integer dl, Integer dr, ArrayList<String>[] rankArray, int depth) throws Exception {
-        double MAXNodeSep = 0.4;
-        double MINNodeSep = 0.1;
+        // these lines set up a gradient color for each level
+        int colorMov = 255 / root.height();
+        if (colorMov == 0)
+            colorMov = 1;
+        int rAndB = 255 - (depth * colorMov);
+        String RB = Integer.toHexString(rAndB);
+        String G = Integer.toHexString(255);
+        String RGB = RB + G + RB;
+        RGB = RGB.toUpperCase();
+        String RGBcolor = "\"#" + RGB + "\"";
 
-        double currNodeSep = (MAXNodeSep - ((MAXNodeSep - MINNodeSep) / root.height()) * depth);
+        double MAXNodeSep = 2.0;
+        double MINNodeSep = 1.0;
+        double currNodeSep = (MAXNodeSep - (((MAXNodeSep - MINNodeSep) / root.height()) * depth));
 
         Integer mid;
         // if the passed BinaryNode is null, return
         if (n == null)
             return;
+        if (n.getLeft() == null && n.getRight() == null)
+            return;
 
-        output.println("{");
         // set data values to variables so it's easier to work with
+        output.println("{");
         String nData = "" + n.getData() + "";
-        output.println(nData + " [fontsize=16, fontname=Helvetica];"); // set attributes for current top node
+        output.println("\"" + nData + "\";");
         mid = ((dr - dl) / 2 + dl);
         String DM = "D" + mid.toString();
+        output.println(DM + " [style=filled, fontsize=4, fontcolor=white, color=white, fillcolor=white, nodesep=" + currNodeSep + "];");
         String DL = "D" + (mid - 1);
         String DR = "D" + (mid + 1);
-        output.println("{node[style=filled, fontcolor=white, color=white, fillcolor=white, "+
-                       "nodesep=" + currNodeSep + "]; \"" + DM + "\"; \"" + DL + "\"; \"" + DR + "\";}");
-
+        if (n.getLeft() == null)
+            output.println(DL + " [style=filled, fontsize=4, fontcolor=white, color=white, fillcolor=white, nodesep=" + currNodeSep + "];");
+        if (n.getRight() == null)
+            output.println(DR + " [style=filled, fontsize=4, fontcolor=white, color=white, fillcolor=white, nodesep=" + currNodeSep + "];");
 
         String getL = null, getR = null;
         if (n.getLeft() != null) {     // adds left and right data to easier variables if they are not null
             getL = "" + n.getLeft().getData() + "";
-            output.println(getL + " [style=filled, fillcolor=\"#FF5959\", nodesep=" + currNodeSep + "]");
+            output.println(getL + " [style=filled, fillcolor=\"#FF5959\", nodesep=" + currNodeSep+"]");
+//            output.println(getL + " [style=filled, fillcolor=" + RGBcolor + ", nodesep=" + currNodeSep + "]");
         }
         if (n.getRight() != null) {
             getR = "" + n.getRight().getData() + "";
-            output.println(getR + " [style=filled, fillcolor=\"#A8A8A8\", nodesep=" + currNodeSep + "]");
+            output.println(getR + " [fontcolor=white, style=filled, fillcolor=\"#1F1F1F\", nodesep=" + currNodeSep+"]");
+//            output.println(getR + " [fontcolor=black, style=filled, fillcolor=" + RGBcolor + ", nodesep=" + currNodeSep + "]");
         }
+
         if (rankArray[depth] == null)
             rankArray[depth] = new ArrayList<String>();
-
 
         /*following 3 if-statements for cases of numChildren = 0, 1, or 2. This allows formatting so that
         if there is only 1 child, the edge will not point straight down but still show left or right*/
         if (n.getLeft() != null && n.getRight() != null) {
             rankArray[depth].add(getL);
+            rankArray[depth].add(DM);
             rankArray[depth].add(getR);
             // if both right and left have data, prints node connections first, then calls recursive methods
             output.println(nData + " -> " + getL);
             output.println(nData + " -> " + DM + " [color=white]"); // set edge to white
             output.println(nData + " -> " + getR);
             // tells dot.exe that these 3 nodes belong on the same level or rank
-            output.println("{rank=same; \"" + getL + "\" \"" + DM + "\" \"" + getR + "\" }");
+//            output.println("{rank=same; \"" + getL + "\" \"" + DM + "\" \"" + getR + "\" }");
             output.println("}\n\n");
             depth++;
             writeDotRecursive(n.getLeft(), output, dl, mid, rankArray, depth);
@@ -565,13 +583,14 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
 
         if (n.getLeft() != null && n.getRight() == null) {
             rankArray[depth].add(getL);
+            rankArray[depth].add(DM);
             rankArray[depth].add(DR);
             // if only the left node has data, sets middle and right nodes to invisible nodes.
             output.println(nData + " -> " + getL);
             output.println(nData + " -> " + DM + " [color=white]");
             output.println(nData + " -> " + DR + " [color=white]");
             // tells dot.exe that these 3 nodes belong on the same level or rank
-            output.println("{rank=same; \"" + getL + "\" \"" + DM + "\" \"" + DR + "\" }");
+//            output.println("{rank=same; \"" + getL + "\" \"" + DM + "\" \"" + DR + "\" }");
             output.println("}\n\n");
             depth++;
             writeDotRecursive(n.getLeft(), output, dl, mid, rankArray, depth);
@@ -580,13 +599,14 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
 
         if (n.getLeft() == null && n.getRight() != null) {
             rankArray[depth].add(DL);
+            rankArray[depth].add(DM);
             rankArray[depth].add(getR);
             // if only right has data, sets left and middle nodes to invisible nodes.
             output.println(nData + " -> " + DL + " [color=white]");
             output.println(nData + " -> " + DM + " [color=white]");
             output.println(nData + " -> " + getR);
             // tells dot.exe that these 3 nodes belong on the same level or rank
-            output.println("{rank=same; \"" + DL + "\" \"" + DM + "\" \"" + getR + "\" }");
+//            output.println("{rank=same; \"" + DL + "\" \"" + DM + "\" \"" + getR + "\" }");
             output.println("}\n\n");
             depth++;
             writeDotRecursive(n.getRight(), output, mid, dr, rankArray, depth);
