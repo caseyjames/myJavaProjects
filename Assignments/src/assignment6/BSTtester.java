@@ -456,13 +456,13 @@ public class BSTtester extends TestCase {
         // assert that all the strings in 'letter' are also now in dotList
         assertTrue(dotList.containsAll(letters));
         // creates a dot file graph representing dotList, proper function will put the new file in this workspace dir.
-        dotList.writeDot("writeDotTest_letters.dot");
+        dotList.writeDot("writeDotTest_letters.gv", letters );
 
         //--------------------------------------------------------------------
         /*tested a second time with a slightly larger list of Integers
             first create list from 1 to desired size*/
-        ArrayList<Integer> lrgList = new ArrayList<Integer>(15);
-        for (int i = 1; i <= 15; i++) {
+        ArrayList<Integer> lrgList = new ArrayList<Integer>(20);
+        for (int i = 1; i <= 20; i++) {
             lrgList.add(i);
         }
 
@@ -472,8 +472,8 @@ public class BSTtester extends TestCase {
 
         // perform swaps of two elements at two random index chosen, loops 500 times to ensure good permutation
         for (int i = 0; i < 500; i++) {
-            int left = rand.nextInt(15);
-            int right = rand.nextInt(15);
+            int left = rand.nextInt(20);
+            int right = rand.nextInt(20);
             // stored copy of left indexed element to temp
             Integer temp = lrgList.get(left);
             // reassign left indexed element to a copy of the the right indexed element
@@ -487,6 +487,6 @@ public class BSTtester extends TestCase {
         // assert that all the Integers in lrgList are now in dotList2 as well
         assertTrue(dotList2.containsAll(lrgList));
         // creates a dot file graph representing dotList2, proper function will put the new file in this workspace dir.
-        dotList2.writeDot("writeDotTest_integers.dot");
+        dotList2.writeDot("writeDotTest_integers.gv", lrgList);
     }
 }

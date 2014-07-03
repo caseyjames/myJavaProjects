@@ -1,5 +1,6 @@
 package assignment6;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,5 +43,5 @@ public interface TreeTraversal<Type extends Comparable<? super Type>> {
      *
      * @param filename - file containing the DOT formated data
      */
-    public void writeDot(String filename);
+    public void writeDot(String filename, ArrayList randList);
 }

@@ -35,6 +35,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
      * Ensures that this set contains the specified item.
      *
      * @param item - the item whose presence is ensured in this set
+     *
      * @return true if this set changed as a result of this method call (that is, if the input item was actually
      * inserted); otherwise, returns false
      * @throws NullPointerException if the item is null
@@ -53,7 +54,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
 
         // find the Node where the data should be added
         BinaryNode currentNode = root;
-        while (!currentNode.isLeaf()) {
+        while (! currentNode.isLeaf()) {
             // if the node is found don't change the BST and return false
             if (currentNode.data.equals(item))
                 return false;
@@ -89,6 +90,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
      * Ensures that this set contains all items in the specified collection.
      *
      * @param items - the collection of items whose presence is ensured in this set
+     *
      * @return true if this set changed as a result of this method call (that is, if any item in the input collection
      * was actually inserted); otherwise, returns false
      * @throws NullPointerException if any of the items is null
@@ -119,6 +121,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
      * Determines if there is an item in this set that is equal to the specified item.
      *
      * @param item - the item sought in this set
+     *
      * @return true if there is an item in this set that is equal to the input item; otherwise, returns false
      * @throws NullPointerException if the item is null
      */
@@ -132,7 +135,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
 
         // search the BST for a Node containing the passed data
         BinaryNode currentNode = root; // start from root
-        while (!currentNode.isLeaf()) {
+        while (! currentNode.isLeaf()) {
             Type data = currentNode.getData();
                 /* the if and if else statements that follow simply compare item against the data in the current node
                    and either change the node to iterate further down the BST or return as appropriate */
@@ -157,6 +160,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
      * Determines if for each item in the specified collection, there is an item in this set that is equal to it.
      *
      * @param items - the collection of items sought in this set
+     *
      * @return true if for each item in the specified collection, there is an item in this set that is equal to it;
      * otherwise, returns false
      * @throws NullPointerException if any of the items is null
@@ -171,7 +175,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
 
         // check if each element in the collection is found in the BST. If not return false
         for (Type element : items)
-            if (!contains(element)) // return false if the element isn't found in the BST
+            if (! contains(element)) // return false if the element isn't found in the BST
                 return false;
         // return true iff every element in the passed collection was found in the BST
         return true;
@@ -188,6 +192,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
      * Ensures that this set does not contain the specified item.
      *
      * @param item - the item whose absence is ensured in this set
+     *
      * @return true if this set changed as a result of this method call (that is, if the input item was actually
      * removed); otherwise, returns false
      * @throws NullPointerException if the item is null
@@ -243,7 +248,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
             }
         }
         // set the direction according to which node matches the data
-        int direction = (currentNode.getLeft() != null && item.compareTo(currentNode.getLeft().getData()) == 0) ? -1 : 1;
+        int direction = (currentNode.getLeft() != null && item.compareTo(currentNode.getLeft().getData()) == 0) ? - 1 : 1;
 
         // these statements only execute if the correct node was found, in which case the node should be removed
         //  according to the number of children, the size should decrement, and this method should return true.
@@ -256,6 +261,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
      * Ensures that this set does not contain any of the items in the specified collection.
      *
      * @param items - the collection of items whose absence is ensured in this set
+     *
      * @return true if this set changed as a result of this method call (that is, if any item in the input collection
      * was actually removed); otherwise, returns false
      * @throws NullPointerException if any of the items is null
@@ -455,100 +461,219 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
      *
      * @param filename - file containing the DOT formated data
      */
-    public void writeDot(String filename) {
+    public void writeDot(String filename, ArrayList randList) {
         try {
             // PrintWriter(FileWriter) will write output to a file
             PrintWriter output = new PrintWriter(new FileWriter(filename));
+            Integer dl = 1;
+            Integer dr = 5 * (root.height() + 1) * (root.height() + 1);
+            ArrayList<String>[] rankArray = new ArrayList[root.height() + 1];
+            int depth = 0;
 
             // print header to graph and set 'strict' which does not allow more than 1 edge between the two same vertices
+            output.println("// " + randList + "\n\n\n");
             output.println("strict digraph BST{\n\n");
             // set attributes
             output.println("center=true");  // centers the graph
-            output.println("ranksep=.4");   // sets distance between levels to 0.4"
-//            output.println("nodesep=0.45");   // sets distance between nodes on the same level, uncomment as desired
-            output.println("outputorder=\"nodefirst\""); // causes nodes to be set first on graph, helps with overlap
-            output.println("packmode=\"node\"");  // acts similar to outputorder above
-            output.println("pack=true");
-            output.println("spline=\"true\"");  // stile of connections (edges) between vertices
-            output.println("edge[weight=10]");  // sets default edge weight, which determines straightness, shortness and other
+            output.println("ranksep=equally");   // sets distance between levels to 0.4"
+//            output.println("nodesep=0.35");   // sets distance between nodes on the same level, uncomment as desired
+//            output.println("outputorder=\"nodefirst\""); // causes nodes to be set first on graph, helps with overlap
+//            output.println("packmode=\"node\"");  // acts similar to outputorder above
+//            output.println("pack=true");
+//            output.println("spline=\"true\"");  // stile of connections (edges) between vertices
 
-            output.println("ratio=0.5"); // sets image ratio (image height/width), 0.5 seems to work good
-            output.println("node[ordering=out]"); // tells dot.exe to keep the left to right child node ordering as in file
+//            output.println("size=\"10,7.5\""); // sets image ratio (image height/width), 0.5 seems to work good
+            output.println("ratio=expand"); // sets image ratio (image height/width), 0.5 seems to work good
+//            output.println("ordering=out"); // tells dot.exe to keep the left to right child node ordering as in file
+            output.println("dpi=150"); // tells dot.exe to keep the left to right child node ordering as in file
+//            output.println("node [fontsize=18, fontname=helvetica]"); // tells dot.exe to keep the left to right child node ordering as in file
 
             // if the BST is not null, call the recursive method to create the .dot file
             if (root != null)
-                writeDotRecursive(root, output);
+                writeDotRecursive(root, output, dl, dr, rankArray, depth);
+
+            for (int i = 0; i < root.height(); i++) {
+                output.println("{ rank=same; ");
+                for (String e : rankArray[i])
+                    output.print(" \"" + e + "\"; ");
+                output.print("}\n");
+            }
+
             // Close the graph
             output.println("}");
             output.close();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // Recursive method that writeDot() driver method calls for writing the tree to a dot file
-    private void writeDotRecursive(BinaryNode n, PrintWriter output) throws Exception {
+    private void writeDotRecursive(BinaryNode n, PrintWriter output, Integer dl, Integer dr, ArrayList<String>[] rankArray, int depth) throws Exception {
+        double MAXNodeSep = 0.4;
+        double MINNodeSep = 0.1;
+
+        double currNodeSep = (MAXNodeSep - ((MAXNodeSep - MINNodeSep) / root.height()) * depth);
+
+        Integer mid;
         // if the passed BinaryNode is null, return
         if (n == null)
             return;
 
+        output.println("{");
         // set data values to variables so it's easier to work with
-        Integer nHeight = n.height();
         String nData = "" + n.getData() + "";
-        String invisData = "D" + nHeight.toString();   // these two variables are invisible nodes to format graph
-        String invisData2 = "DD" + nHeight.toString(); // they are put between or inplace of left and right
+        output.println(nData + " [fontsize=16, fontname=Helvetica];"); // set attributes for current top node
+        mid = ((dr - dl) / 2 + dl);
+        String DM = "D" + mid.toString();
+        String DL = "D" + (mid - 1);
+        String DR = "D" + (mid + 1);
+        output.println("{node[style=filled, fontcolor=white, color=white, fillcolor=white, "+
+                       "nodesep=" + currNodeSep + "]; \"" + DM + "\"; \"" + DL + "\"; \"" + DR + "\";}");
+
+
         String getL = null, getR = null;
-        if (n.getLeft() != null)      // adds left and right data to easier variables if they are not null
+        if (n.getLeft() != null) {     // adds left and right data to easier variables if they are not null
             getL = "" + n.getLeft().getData() + "";
-        if (n.getRight() != null)
+            output.println(getL + " [style=filled, fillcolor=\"#FF5959\", nodesep=" + currNodeSep + "]");
+        }
+        if (n.getRight() != null) {
             getR = "" + n.getRight().getData() + "";
+            output.println(getR + " [style=filled, fillcolor=\"#A8A8A8\", nodesep=" + currNodeSep + "]");
+        }
+        if (rankArray[depth] == null)
+            rankArray[depth] = new ArrayList<String>();
+
 
         /*following 3 if-statements for cases of numChildren = 0, 1, or 2. This allows formatting so that
         if there is only 1 child, the edge will not point straight down but still show left or right*/
         if (n.getLeft() != null && n.getRight() != null) {
+            rankArray[depth].add(getL);
+            rankArray[depth].add(getR);
             // if both right and left have data, prints node connections first, then calls recursive methods
             output.println(nData + " -> " + getL);
-            output.println(invisData + " [label=\"\", shape=ellipse, style=invis]"); //sets blank label and style invisible
-            output.println(nData + " -> " + invisData + " [weight=100, style=invis]"); // high weight so edges go left and right
+            output.println(nData + " -> " + DM + " [color=white]"); // set edge to white
             output.println(nData + " -> " + getR);
             // tells dot.exe that these 3 nodes belong on the same level or rank
-            output.println("{rank=same; \"" + getL + "\" \"" + invisData + "\" \"" + getR + "\" }");
-
-            // call recursive methods once node connections are printed to file
-            writeDotRecursive(n.getLeft(), output);
-            writeDotRecursive(n.getRight(), output);
+            output.println("{rank=same; \"" + getL + "\" \"" + DM + "\" \"" + getR + "\" }");
+            output.println("}\n\n");
+            depth++;
+            writeDotRecursive(n.getLeft(), output, dl, mid, rankArray, depth);
+            writeDotRecursive(n.getRight(), output, mid, dr, rankArray, depth);
             return;
         }
 
         if (n.getLeft() != null && n.getRight() == null) {
+            rankArray[depth].add(getL);
+            rankArray[depth].add(DR);
             // if only the left node has data, sets middle and right nodes to invisible nodes.
             output.println(nData + " -> " + getL);
-            output.println(invisData + " [label=\"\", shape=ellipse, style=invis]");
-            output.println(nData + " -> " + invisData + " [weight=100, style=invis]");
-            output.println(invisData2 + " [label=\"\", shape=ellipse, style=invis]");
-            output.println(nData + " -> " + invisData2 + " [style=invis]");
+            output.println(nData + " -> " + DM + " [color=white]");
+            output.println(nData + " -> " + DR + " [color=white]");
             // tells dot.exe that these 3 nodes belong on the same level or rank
-            output.println("{rank=same; \"" + getL + "\" \"" + invisData + "\" \"" + invisData2 + "\" }");
-
-            // call recursive method once node connections are printed to file
-            writeDotRecursive(n.getLeft(), output);
+            output.println("{rank=same; \"" + getL + "\" \"" + DM + "\" \"" + DR + "\" }");
+            output.println("}\n\n");
+            depth++;
+            writeDotRecursive(n.getLeft(), output, dl, mid, rankArray, depth);
             return;
         }
 
         if (n.getLeft() == null && n.getRight() != null) {
+            rankArray[depth].add(DL);
+            rankArray[depth].add(getR);
             // if only right has data, sets left and middle nodes to invisible nodes.
-            output.println(invisData + " [label=\"\", shape=ellipse, style=invis]");
-            output.println(nData + " -> " + invisData + " [style=invis]");
-            output.println(invisData2 + " [label=\"\", shape=ellipse, style=invis]");
-            output.println(nData + " -> " + invisData2 + " [weight=100, style=invis]");
+            output.println(nData + " -> " + DL + " [color=white]");
+            output.println(nData + " -> " + DM + " [color=white]");
             output.println(nData + " -> " + getR);
             // tells dot.exe that these 3 nodes belong on the same level or rank
-            output.println("{rank=same; \"" + invisData + "\" \"" + invisData2 + "\" \"" + getR + "\" }");
-
-            // call recursive method once node connections are printed to file
-            writeDotRecursive(n.getRight(), output);
+            output.println("{rank=same; \"" + DL + "\" \"" + DM + "\" \"" + getR + "\" }");
+            output.println("}\n\n");
+            depth++;
+            writeDotRecursive(n.getRight(), output, mid, dr, rankArray, depth);
             return;
         }
+
+//        int colorMov = (255 - 16) / root.height();
+//        if (colorMov == 0)
+//            colorMov = 1;
+//        int depth = root.height() - n.height();
+//        int rAndB = 255 - (depth * colorMov);
+//        String RB = Integer.toHexString(rAndB);
+//        String G = Integer.toHexString(255);
+//        String RGB = RB + G + RB;
+//        RGB = RGB.toUpperCase();
+//        String RGBcolor = "\"#" + RGB + "\"";
+//        Integer mid;
+//        // if the passed BinaryNode is null, return
+//        if (n == null)
+//            return;
+//
+//        // set data values to variables so it's easier to work with
+//        Integer nHeight = n.height();
+//        String nData = "" + n.getData() + "";
+//        mid = ((dr - dl) / 2 + dl);
+//        String DM = "D" + mid.toString();
+//        String DL = "D" + (mid - 1);
+//        String DR = "D" + (mid + 1);
+//
+//        String getL = null, getR = null;
+//        if (n.getLeft() != null)      // adds left and right data to easier variables if they are not null
+//            getL = "" + n.getLeft().getData() + "";
+//        if (n.getRight() != null)
+//            getR = "" + n.getRight().getData() + "";
+//
+//        /*following 3 if-statements for cases of numChildren = 0, 1, or 2. This allows formatting so that
+//        if there is only 1 child, the edge will not point straight down but still show left or right*/
+//        if (n.getLeft() != null && n.getRight() != null) {
+//            // if both right and left have data, prints node connections first, then calls recursive methods
+//            output.println(getL + " [style=filled, fillcolor="+RGBcolor+"]");
+//            output.println(nData + " -> " + getL + " [minlen=1.5]");
+//            output.println(DM + " [style=filled, fontcolor=white, color=white, fillcolor=white]"); //sets blank label and style invisible
+//            output.println(nData + " -> " + DM + " [color=white]"); // high weight so edges go left and right
+//            output.println(getR + " [style=filled, fillcolor="+RGBcolor+"]");
+//            output.println(nData + " -> " + getR + " [minlen=1.5]");
+//            // tells dot.exe that these 3 nodes belong on the same level or rank
+//            output.println("{rank=same; \"" + getL + "\" \"" + DM + "\" \"" + getR + "\" }");
+//
+//            // call recursive methods once node connections are printed to file
+//            writeDotRecursive(n.getLeft(), output, dl, mid);
+//            writeDotRecursive(n.getRight(), output, mid, dr);
+//            return;
+//        }
+//
+//        if (n.getLeft() != null && n.getRight() == null) {
+//            // if only the left node has data, sets middle and right nodes to invisible nodes.
+//            output.println(getL + " [style=filled, fillcolor="+RGBcolor+"]");
+//            output.println(nData + " -> " + getL + " [minlen=1.5]");
+//            output.println(DM + " [style=filled, fontcolor=white, color=white, fillcolor=white]");
+//            output.println(nData + " -> " + DM + " [color=white]");
+//            output.println(DR + " [style=filled, fontcolor=white, color=white, fillcolor=white]");
+//            output.println(nData + " -> " + DR + " [minlen=1.5, color=white]");
+//            // tells dot.exe that these 3 nodes belong on the same level or rank
+//            output.println("{rank=same; \"" + getL + "\" \"" + DM + "\" \"" + DR + "\" }");
+//
+//            // call recursive method once node connections are printed to file
+//            writeDotRecursive(n.getLeft(), output, dl, mid);
+//            return;
+//        }
+//
+//        if (n.getLeft() == null && n.getRight() != null) {
+//            // if only right has data, sets left and middle nodes to invisible nodes.
+//            output.println(DL + " [style=filled, fontcolor=white, color=white, fillcolor=white]");
+//            output.println(nData + " -> " + DL + " [minlen=1.5, color=white]");
+//            output.println(DM + " [style=filled, fontcolor=white, color=white, fillcolor=white]");
+//            output.println(nData + " -> " + DM + " [color=white]");
+//            output.println(getR + " [style=filled, fillcolor="+RGBcolor+"]");
+//            output.println(nData + " -> " + getR + " [minlen=1.5]");
+//            // tells dot.exe that these 3 nodes belong on the same level or rank
+//            output.println("{rank=same; \"" + DL + "\" \"" + DM + "\" \"" + getR + "\" }");
+//
+//            // call recursive method once node connections are printed to file
+//            writeDotRecursive(n.getRight(), output, mid, dr);
+//            return;
+//            /*label=\"\", */
+//        }
+
     }
 
 
@@ -728,19 +853,20 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
          * Removes the child of the this node according to the passed direction
          *
          * @param direction an int indicating which child to remove: -1 for the left, 1 for the right
+         *
          * @throws NoSuchElementException if the node doesn't have the indicated child, or the node is null
          */
         public void remove(int direction) {
             // throw Exceptions for every invalid removal case, with a message as appropriate
-            if (direction != -1 && direction != 1)
+            if (direction != - 1 && direction != 1)
                 throw new NoSuchElementException("Tried BinaryNode.remove with the invalid direction " + direction + "!");
-            if (direction == -1 && left == null)
+            if (direction == - 1 && left == null)
                 throw new NoSuchElementException("Tried BinaryNode.remove to the left with no left child!");
             if (direction == 1 && right == null)
                 throw new NoSuchElementException("Tried BinaryNode.remove to the right with no right child!");
 
             // implement removal based on the direction and number of children
-            if (direction == -1) { // removing the left child
+            if (direction == - 1) { // removing the left child
                 if (left.isLeaf())
                     remove0(direction);
                 else if (left.numChildren() == 1)
@@ -763,7 +889,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
          * @param direction an int indicating which child to remove: -1 for the left, 1 for the right
          */
         private void remove0(int direction) {
-            if (direction == -1) // removing the left child
+            if (direction == - 1) // removing the left child
                 left = null;
             else // removing the right child
                 right = null;
@@ -776,7 +902,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
          */
         private void remove1(int direction) {
             // to remove a node with one child simply set the correct to the non-null subtree
-            if (direction == -1) left = (left.left != null) ? left.left : left.right;
+            if (direction == - 1) left = (left.left != null) ? left.left : left.right;
             else right = (right.left != null) ? right.left : right.right;
         }
 
@@ -786,7 +912,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
          * @param direction an int indicating which child to remove: -1 for the left, 1 for the right
          */
         private void remove2(int direction) {
-            if (direction == -1) { // removing left node
+            if (direction == - 1) { // removing left node
                 // if the right node has no left children then it is the successor - copy its data and remove it
                 if (left.right.left == null) {
                     left.data = left.right.data;
@@ -798,7 +924,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
                 while (parentNode.left.left != null)
                     parentNode = parentNode.left;
                 left.data = parentNode.left.data;
-                parentNode.remove(-1);
+                parentNode.remove(- 1);
             } else { // removing right node
                 // if the right node has no left children then it is the successor - copy its data and remove it
                 if (right.right.left == null) {
@@ -811,7 +937,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
                 while (parentNode.left.left != null)
                     parentNode = parentNode.left;
                 right.data = parentNode.left.data;
-                parentNode.remove(-1);
+                parentNode.remove(- 1);
             }
         }
     }
