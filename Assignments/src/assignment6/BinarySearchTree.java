@@ -470,6 +470,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
             output.println("packmode=\"node\"");  // acts similar to outputorder above
             output.println("pack=true");
             output.println("spline=\"true\"");  // stile of connections (edges) between vertices
+            output.println("edge[weight=10]");  // sets default edge weight, which determines straightness, shortness and other
 
             output.println("ratio=0.5"); // sets image ratio (image height/width), 0.5 seems to work good
             output.println("node[ordering=out]"); // tells dot.exe to keep the left to right child node ordering as in file
@@ -508,7 +509,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
             // if both right and left have data, prints node connections first, then calls recursive methods
             output.println(nData + " -> " + getL);
             output.println(invisData + " [label=\"\", shape=ellipse, style=invis]"); //sets blank label and style invisible
-            output.println(nData + " -> " + invisData + " [style=invis]"); // high weight so edges go left and right
+            output.println(nData + " -> " + invisData + " [weight=100, style=invis]"); // high weight so edges go left and right
             output.println(nData + " -> " + getR);
             // tells dot.exe that these 3 nodes belong on the same level or rank
             output.println("{rank=same; \"" + getL + "\" \"" + invisData + "\" \"" + getR + "\" }");
@@ -523,7 +524,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
             // if only the left node has data, sets middle and right nodes to invisible nodes.
             output.println(nData + " -> " + getL);
             output.println(invisData + " [label=\"\", shape=ellipse, style=invis]");
-            output.println(nData + " -> " + invisData + " [style=invis]");
+            output.println(nData + " -> " + invisData + " [weight=100, style=invis]");
             output.println(invisData2 + " [label=\"\", shape=ellipse, style=invis]");
             output.println(nData + " -> " + invisData2 + " [style=invis]");
             // tells dot.exe that these 3 nodes belong on the same level or rank
@@ -539,7 +540,7 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
             output.println(invisData + " [label=\"\", shape=ellipse, style=invis]");
             output.println(nData + " -> " + invisData + " [style=invis]");
             output.println(invisData2 + " [label=\"\", shape=ellipse, style=invis]");
-            output.println(nData + " -> " + invisData2 + " [style=invis]");
+            output.println(nData + " -> " + invisData2 + " [weight=100, style=invis]");
             output.println(nData + " -> " + getR);
             // tells dot.exe that these 3 nodes belong on the same level or rank
             output.println("{rank=same; \"" + invisData + "\" \"" + invisData2 + "\" \"" + getR + "\" }");
