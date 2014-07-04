@@ -64,7 +64,7 @@ public class GraphUtil
         // first add the goalVertex before looping
         reversePath.add(goalVertex.getName());
         // continuos loop until goalVertex equal startVertex
-        while (! (goalVertex.compareTo(startVertex)==0)){
+        while (! goalVertex.equals(startVertex)){
             reversePath.add(goalVertex.getCameFrom().getName());
             goalVertex = goalVertex.getCameFrom();
         }
@@ -79,7 +79,7 @@ public class GraphUtil
 
     private static void depthFirstSearchRecursive(Vertex currentVertex, Vertex goalVertex) {
         // check if currVertex is goal
-        if (currentVertex.compareTo(goalVertex) == 0)
+        if (currentVertex.equals(goalVertex))
             return;
 
 
