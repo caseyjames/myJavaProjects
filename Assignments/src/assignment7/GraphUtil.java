@@ -2,9 +2,7 @@ package assignment7;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Utility class containing methods for operating on graphs.
@@ -27,26 +25,95 @@ public class GraphUtil
 	 * (See Lecture 18 for the algorithm.)
 	 *
 	 * @param graph - The graph object to be traversed
-	 * @param start - Name of the starting vertex in the path
-	 * @param goal  - Name of the ending vertex in the path
+	 * @param startName - Name of the starting vertex in the path
+	 * @param goalName  - Name of the ending vertex in the path
 	 * @return a list of the vertices that make up a path path from the vertex with the name startName (inclusive)
 	 *         to the ending vertex with the name goalName (inclusive) 
 	 * @throws UnsupportedOperationException if there are no vertices in the graph with the names startName or goalName 
 	 */
-	public static List<String> depthFirstSearch(Graph graph, String startName, String goalName)
-	{		
-		// TODO
-		
-		return null;
-	}
-	
-	/**
+	public static List<String> depthFirstSearch(Graph graph, String startName, String goalName) {
+        //ArrayList to hold vertices in path in the correct order from startVertex to goalVertex
+        ArrayList<String> path = new ArrayList<String>();
+
+        // declare and instantiate a HashMap of this graphs vertices.
+        HashMap<String, Vertex> graphMap = graph.getVertices();
+
+        // throw exception of startName and goalName are not associated with any vertices the HashMap
+        if (! (graphMap.containsKey(startName)) || ! (graphMap.containsKey(goalName)))
+            throw new UnsupportedOperationException("The startName or goalName do not exist!");
+
+        // store vertex at startName & goalName to pass to depthFirstSearchRecursive
+        Vertex startVertex = graphMap.get(startName);
+        Vertex goalVertex = graphMap.get(goalName);
+
+        // set start vertex to visited to avoid cycles
+        startVertex.setVisited(true);
+
+        // call recursive method
+        depthFirstSearchRecursive(startVertex, goalVertex);
+
+        //after recursive call, if goal vertex has not been visited, state no path found and return empty list
+        if (goalVertex.getVisited() == false) {
+            System.out.println("There was no path found from the vertex "+startName+" to the vertex "+goalName+"!");
+            return path;
+        }
+
+        //ArrayList to hold the vertex names of the found path in reverse
+        ArrayList<String> reversePath = new ArrayList<String>();
+
+        // first add the goalVertex before looping
+        reversePath.add(goalVertex.getName());
+        // continuos loop until goalVertex equal startVertex
+        while (! (goalVertex.compareTo(startVertex)==0)){
+            reversePath.add(goalVertex.getCameFrom().getName());
+            goalVertex = goalVertex.getCameFrom();
+        }
+
+        // enhanced for loop to add path vertex names to return list in correct order.
+        for(String name : reversePath)
+            path.add(name);
+
+        //return completed array list
+        return path;
+    }
+
+    private static void depthFirstSearchRecursive(Vertex currentVertex, Vertex goalVertex) {
+        // check if currVertex is goal
+        if (currentVertex.compareTo(goalVertex) == 0)
+            return;
+
+
+        //get an iterator for the adjacent edges
+        Iterator<Edge> currentEdges = currentVertex.edges();
+
+        // edge to hold the current edge that the iterator returned
+        Edge thisEdge;
+        // next vertex to visit
+        Vertex nextVertex;
+
+        //while there are more edges to iterate through & the goal vertex hasn't been visited, call recursive method
+        while (currentEdges.hasNext() && goalVertex.getVisited()==false){
+            //set this edge to next edge that the iterator returns
+            thisEdge = currentEdges.next();
+
+            if (thisEdge.getOtherVertex().getVisited()==false){     //if the edge points to an unvisited vertex,
+                nextVertex = thisEdge.getOtherVertex();             //visit vertex with recursive method
+                nextVertex.setVisited(true);
+                nextVertex.setCameFrom(currentVertex);
+                // call recursive method
+                depthFirstSearchRecursive(nextVertex, goalVertex);
+            }
+        }
+        return;
+    }
+
+    /**
 	 * Performs a breadth-first search on a graph to determine the shortest path from a start vertex to an goal vertex. 
 	 * (See Lecture 18 for the algorithm.)
 	 * 
 	 * @param graph - The graph object to be traversed
-	 * @param start - Name of the starting vertex in the path
-	 * @param goal  - Name of the ending vertex in the path
+	 * @param startName - Name of the starting vertex in the path
+	 * @param goalName  - Name of the ending vertex in the path
 	 * @return a list of the vertices that make up the shortest path from the vertex with the name startName (inclusive)
 	 *         to the ending vertex with the name goalName (inclusive)
 	 * @throws UnsupportedOperationException if there are no vertices in the graph with the names startName or goalName 
@@ -66,8 +133,8 @@ public class GraphUtil
 	 * See the API for PriorityQueue, and ask the course staff if you need help.
 	 * 
 	 * @param graph - The graph object to be traversed
-	 * @param start - Name of the starting vertex in the path
-	 * @param goal  - Name of the ending vertex in the path
+	 * @param startName - Name of the starting vertex in the path
+	 * @param goalName  - Name of the ending vertex in the path
 	 * @return a list of the vertices that make up the cheapest path from the starting vertex (inclusive) to the 
 	 *         ending vertex (inclusive) based on weight associated with the edges between the graphs vertices
 	 * @throws UnsupportedOperationException if the graph is not weighted, or there are no vertices in the graph
