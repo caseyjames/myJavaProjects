@@ -550,13 +550,13 @@ public class BinarySearchTree<Type extends Comparable<? super Type>> implements 
         String getL = null, getR = null;
         if (n.getLeft() != null) {     // adds left and right data to easier variables if they are not null
             getL = "" + n.getLeft().getData() + "";
-            output.println(getL + " [style=filled, fillcolor=\"#FF5959\", nodesep=" + currNodeSep+"]");
-//            output.println(getL + " [style=filled, fillcolor=" + RGBcolor + ", nodesep=" + currNodeSep + "]");
+//            output.println(getL + " [style=filled, fillcolor=\"#FF5959\", nodesep=" + currNodeSep+"]");
+            output.println(getL + " [style=filled, fillcolor=" + RGBcolor + ", nodesep=" + currNodeSep + "]");
         }
         if (n.getRight() != null) {
             getR = "" + n.getRight().getData() + "";
-            output.println(getR + " [fontcolor=white, style=filled, fillcolor=\"#1F1F1F\", nodesep=" + currNodeSep+"]");
-//            output.println(getR + " [fontcolor=black, style=filled, fillcolor=" + RGBcolor + ", nodesep=" + currNodeSep + "]");
+//            output.println(getR + " [fontcolor=white, style=filled, fillcolor=\"#1F1F1F\", nodesep=" + currNodeSep+"]");
+            output.println(getR + " [fontcolor=black, style=filled, fillcolor=" + RGBcolor + ", nodesep=" + currNodeSep + "]");
         }
 
         if (rankArray[depth] == null)

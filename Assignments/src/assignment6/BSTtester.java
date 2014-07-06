@@ -461,7 +461,7 @@ public class BSTtester extends TestCase {
         //--------------------------------------------------------------------
         /*tested a second time with a slightly larger list of Integers
             first create list from 1 to desired size*/
-        int inputSize = 16;
+        int inputSize = 50;
         ArrayList<Integer> lrgList = new ArrayList<Integer>(inputSize);
         for (int i = 1; i <= inputSize; i++) {
             lrgList.add(i);

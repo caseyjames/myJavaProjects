@@ -6,45 +6,106 @@ import java.util.*;
 
 /**
  * Utility class containing methods for operating on graphs.
- * 
+ * <p/>
  * Depth-first-search routine - to find a path between two vertices in a graph
  * Breadth-first-search routine - to find the shortest path between two vertices in a graph
  * Dijkstra's cheapest path routine - to find the cheapest path between two vertices in a graph
  * Topological sort - to produce a topologically sorted list of all vertices in a graph
  * Generating random graphs routine - to generate parameterized random graph for testing
- * Building graphs from file routine - to create and build a graph object from a valid dot file  
- * 
+ * Building graphs from file routine - to create and build a graph object from a valid dot file
+ *
  * @author Paymon Saebi
- * @author 
- * @author 
+ * @author Cody Cortello
+ * @author Casey Nordgran
  */
-public class GraphUtil
-{
-	/**
-	 * Performs a depth-first search of a graph to determine a path from a start vertex to an goal vertex. 
-	 * (See Lecture 18 for the algorithm.)
-	 *
-	 * @param graph - The graph object to be traversed
-	 * @param startName - Name of the starting vertex in the path
-	 * @param goalName  - Name of the ending vertex in the path
-	 * @return a list of the vertices that make up a path path from the vertex with the name startName (inclusive)
-	 *         to the ending vertex with the name goalName (inclusive) 
-	 * @throws UnsupportedOperationException if there are no vertices in the graph with the names startName or goalName 
-	 */
-	public static List<String> depthFirstSearch(Graph graph, String startName, String goalName) {
+public class GraphUtil {
+
+//    /**
+//     * Performs a depth-first search of a graph to determine a path from a start vertex to an goal vertex.
+//     * (See Lecture 18 for the algorithm.)
+//     *
+//     * @param graph - The graph object to be traversed
+//     * @param startName - Name of the starting vertex in the path
+//     * @param goalName  - Name of the ending vertex in the path
+//     * @return a list of the vertices that make up a path path from the vertex with the name startName (inclusive)
+//     * to the ending vertex with the name goalName (inclusive)
+//     * @throws UnsupportedOperationException if there are no vertices in the graph with the names startName or goalName
+//     */
+//    public static List<String> depthFirstSearch(Graph graph, String startName, String goalName) {
+//        // check that the correct vertices exist in the graph. If not, throw an exception
+//        if (!graph.getVertices().containsKey(startName))
+//            throw new UnsupportedOperationException("DFS: the start vertex doesn't exist");
+//        if (!graph.getVertices().containsKey(goalName))
+//            throw new UnsupportedOperationException("DFS: the goal vertex doesn't exist");
+//
+//        // use this method as a driver method
+//        Vertex currentVertex = DFS(graph, startName, goalName);
+//
+//        // create path list and return it
+//        LinkedList<String> path = new LinkedList<String>();
+//        while (currentVertex.getCameFrom() != null) {
+//            path.addFirst(currentVertex.getName());
+//            currentVertex = currentVertex.getCameFrom();
+//        }
+//        return path;
+//    }
+//
+//    /**
+//     * The recursive method for depthFirstSearch
+//     *
+//     * @param graph - The graph object to be traversed
+//     * @param currentName - Name of the current vertex in the path
+//     * @param goalName  - Name of the ending vertex in the path
+//     * @return a list of the vertices that make up a path path from the vertex with the name startName (inclusive)
+//     * to the ending vertex with the name goalName (inclusive)
+//     */
+//    private static Vertex DFS(Graph graph, String currentName, String goalName) {
+//        // check for completion
+//        if (currentName.equals(goalName))
+//            return graph.getVertices().get(currentName);
+//
+//        // get the edges connected to this node to iterate through
+//        Vertex currentVertex = graph.getVertices().get(currentName);
+//        LinkedList<Edge> currentNeighbors = currentVertex.getEdges();
+//
+//        // set this vertex as visited to prevent cycling
+//        currentVertex.setVisited(true);
+//
+//        // for each neighbor rerun the recursion at that neighbor
+//        for (Edge currentNeighbor : currentNeighbors) {
+//            Vertex nextVertex = currentNeighbor.getOtherVertex();
+//            if (nextVertex.getVisited()) // if a node has been visited skip it
+//                continue;
+//            nextVertex.setCameFrom(currentVertex);
+//            DFS(graph, nextVertex.getName(), goalName);
+//        }
+//    }
+
+    /**
+     * Performs a depth-first search of a graph to determine a path from a start vertex to an goal vertex.
+     * (See Lecture 18 for the algorithm.)
+     *
+     * @param graph - The graph object to be traversed
+     * @param startName - Name of the starting vertex in the path
+     * @param goalName  - Name of the ending vertex in the path
+     * @return a list of the vertices that make up a path path from the vertex with the name startName (inclusive)
+     *         to the ending vertex with the name goalName (inclusive)
+     * @throws UnsupportedOperationException if there are no vertices in the graph with the names startName or goalName
+     */
+    public static List<String> depthFirstSearch(Graph graph, String startName, String goalName) {
         //ArrayList to hold vertices in path in the correct order from startVertex to goalVertex
         ArrayList<String> path = new ArrayList<String>();
 
-        // declare and instantiate a HashMap of this graphs vertices.
-        HashMap<String, Vertex> graphMap = graph.getVertices();
+        // copy of this graphs HashMap so the original field values of the vertices are not changed.
+        HashMap<String,Vertex> map = new HashMap<String,Vertex>(graph.getVertices());
 
         // throw exception of startName and goalName are not associated with any vertices the HashMap
-        if (! (graphMap.containsKey(startName)) || ! (graphMap.containsKey(goalName)))
+        if (! (map.containsKey(startName)) || ! (map.containsKey(goalName)))
             throw new UnsupportedOperationException("The startName or goalName do not exist!");
 
         // store vertex at startName & goalName to pass to depthFirstSearchRecursive
-        Vertex startVertex = graphMap.get(startName);
-        Vertex goalVertex = graphMap.get(goalName);
+        Vertex startVertex = map.get(startName);
+        Vertex goalVertex = map.get(goalName);
 
         // set start vertex to visited to avoid cycles
         startVertex.setVisited(true);
@@ -54,34 +115,39 @@ public class GraphUtil
 
         //after recursive call, if goal vertex has not been visited, state no path found and return empty list
         if (goalVertex.getVisited() == false) {
-            System.out.println("There was no path found from the vertex "+startName+" to the vertex "+goalName+"!");
+            System.out.println("There was no path found from the vertex " + startName + " to the vertex " + goalName + "!");
             return path;
         }
 
-        //ArrayList to hold the vertex names of the found path in reverse
-        ArrayList<String> reversePath = new ArrayList<String>();
+        //LinkedList to hold the vertex names of the found path in reverse
+        LinkedList<String> reversePath = new LinkedList<String>();
 
         // first add the goalVertex before looping
         reversePath.add(goalVertex.getName());
         // continuos loop until goalVertex equal startVertex
-        while (! goalVertex.equals(startVertex)){
-            reversePath.add(goalVertex.getCameFrom().getName());
+        while (! goalVertex.equals(startVertex)) {
+            reversePath.addLast(goalVertex.getCameFrom().getName());
             goalVertex = goalVertex.getCameFrom();
         }
 
-        // enhanced for loop to add path vertex names to return list in correct order.
-        for(String name : reversePath)
-            path.add(name);
+        // remove last items adding to path
+        while (! reversePath.isEmpty())
+            path.add(reversePath.removeLast());
 
         //return completed array list
         return path;
     }
 
+    /**
+     * Recursive method that is called by the depthFirstSearch driver method above.
+     *
+     * @param currentVertex start vertex or current vertex to traverse from to reach the goal vertex.
+     * @param goalVertex    the vertex trying to be reach by a graph path from current or start vertex.
+     */
     private static void depthFirstSearchRecursive(Vertex currentVertex, Vertex goalVertex) {
         // check if currVertex is goal
         if (currentVertex.equals(goalVertex))
             return;
-
 
         //get an iterator for the adjacent edges
         Iterator<Edge> currentEdges = currentVertex.edges();
@@ -92,11 +158,10 @@ public class GraphUtil
         Vertex nextVertex;
 
         //while there are more edges to iterate through & the goal vertex hasn't been visited, call recursive method
-        while (currentEdges.hasNext() && goalVertex.getVisited()==false){
+        while (currentEdges.hasNext() && goalVertex.getVisited() == false) {
             //set this edge to next edge that the iterator returns
             thisEdge = currentEdges.next();
-
-            if (thisEdge.getOtherVertex().getVisited()==false){     //if the edge points to an unvisited vertex,
+            if (thisEdge.getOtherVertex().getVisited() == false) {     //if the edge points to an unvisited vertex,
                 nextVertex = thisEdge.getOtherVertex();             //visit vertex with recursive method
                 nextVertex.setVisited(true);
                 nextVertex.setCameFrom(currentVertex);
@@ -104,260 +169,411 @@ public class GraphUtil
                 depthFirstSearchRecursive(nextVertex, goalVertex);
             }
         }
+        //return if goal is reached or there are no other vertices to visit.
         return;
     }
 
     /**
-	 * Performs a breadth-first search on a graph to determine the shortest path from a start vertex to an goal vertex. 
-	 * (See Lecture 18 for the algorithm.)
-	 * 
-	 * @param graph - The graph object to be traversed
-	 * @param startName - Name of the starting vertex in the path
-	 * @param goalName  - Name of the ending vertex in the path
-	 * @return a list of the vertices that make up the shortest path from the vertex with the name startName (inclusive)
-	 *         to the ending vertex with the name goalName (inclusive)
-	 * @throws UnsupportedOperationException if there are no vertices in the graph with the names startName or goalName 
-	 */
-	public static List<String> breadthFirstSearch(Graph graph, String startName, String goalName)
-	{		
-		// TODO
-		
-		return null;
-	}
+     * Performs a breadth-first search on a graph to determine the shortest path from a start vertex to an goal vertex.
+     * (See Lecture 18 for the algorithm.)
+     *
+     * @param graph - The graph object to be traversed
+     * @param startName - Name of the starting vertex in the path
+     * @param goalName  - Name of the ending vertex in the path
+     * @return a list of the vertices that make up the shortest path from the vertex with the name startName (inclusive)
+     * to the ending vertex with the name goalName (inclusive)
+     * @throws UnsupportedOperationException if there are no vertices in the graph with the names startName or goalName
+     */
+    public static List<String> breadthFirstSearch(Graph graph, String startName, String goalName) {
+        //ArrayList to hold vertices in path in the correct order from startVertex to goalVertex
+        ArrayList<String> path = new ArrayList<String>();
 
-	/**
-	 * Performs Dijkstra's routine on a weighted graph to determine the cheapest path from start vertex to a goal vertex.
-	 * (See Lecture 19 for the algorithm.)
-	 * 
-	 * Uses Java's PriorityQueue class to find the "unvisited vertex with smallest distance from start". 
-	 * See the API for PriorityQueue, and ask the course staff if you need help.
-	 * 
-	 * @param graph - The graph object to be traversed
-	 * @param startName - Name of the starting vertex in the path
-	 * @param goalName  - Name of the ending vertex in the path
-	 * @return a list of the vertices that make up the cheapest path from the starting vertex (inclusive) to the 
-	 *         ending vertex (inclusive) based on weight associated with the edges between the graphs vertices
-	 * @throws UnsupportedOperationException if the graph is not weighted, or there are no vertices in the graph
-	 *         with the names startName or goalName 
-	 */
-	public static List<String> dijkstrasShortestPath(Graph graph, String startName, String goalName)
-	{
-		// TODO
-		
-		return null;
-	}
-	
-	/**
-	 * Performs a topological sort of the vertices in a directed acyclic graph. 
-	 * (See Lecture 19 for the algorithm.)
-	 * 
-	 * @param graph - The graph object to be traversed
-	 * @return a list of the vertex names in topologically sorted order
-	 * @throws UnsupportedOperationException if the graph is undirected, or it is cyclic.
-	 */
-	public static List<String> topologicalSort(Graph graph)
-	{
-		// TODO
-		
-		return null;
-	}
+        // get graph HashMap to access the vertices by name
+        HashMap<String,Vertex> map = new HashMap<String,Vertex>(graph.getVertices());
+        // throw exception of startName and goalName are not associated with any vertices the HashMap
+        if (! (map.containsKey(startName)) || ! (map.containsKey(goalName)))
+            throw new UnsupportedOperationException("The startName or goalName do not exist!");
 
-	/**
-	 * Builds a graph according to the edges specified in the given DOT file (e.g., "a -- b" or "a -> b"). 
-	 * Accepts directed ("digraph") or undirected ("graph") graphs.
-	 * 
-	 * Accepts many valid DOT files (see examples posted with assignment). 
-	 * --accepts \\-style comments 
-	 * --accepts one edge per line or edges terminated with ;\ 
-	 * --accepts label attributes (e.g., [label = "a label"]) for weights
-	 * 
-	 * @param filename - name of the DOT file
-	 */
-	public static void generateGraphInDotFile(String filename, int vertexCount, int edgeDensity, boolean directed, boolean acyclic, boolean weighted)
-	{
-		PrintWriter out = null;
+        // queue to traverse through and visit neighbors breadth first,implemented with LinkedList
+        LinkedList<Vertex> Q = new LinkedList<Vertex>() {};
 
-		try
-		{
-			out = new PrintWriter(filename);
-		} 
-		catch (Exception e)
-		{
-			System.out.print("Unable to utilize the graph .dot file name: ");
-			System.err.println(e.getMessage());
-		}
+        // current vertex, most recently dequeued from list, beginning vertex obtained from map, and neighbor vertex
+        Vertex current, neighbor, start = map.get(startName), goal = map.get(goalName);
 
-		Vertex[] vertex = new Vertex[vertexCount];
-		Random rng = new Random();
+        // set start vertex as visited and enque on to queue
+        start.setVisited(true);
+        Q.add(start);
+        // set current to start node at first to avoid
+        current = start;
 
-		String edgeOp = "--";
+        // keep visiting neighbors while the queue is not empty
+        while (! Q.isEmpty()) {
+            current = Q.removeFirst();
+            //check if current is equal to goal, if so break from while loop, if not iterate through neighbors
+            if (current.equals(goal))
+                break;
+            // get iterator to traverse neighboring edges
+            Iterator<Edge> itr = current.edges();
 
-		if (directed)
-		{
-			out.print("di");
-			edgeOp = "->";
-		}
+            // iterate each neighbor, through the edges, if unvisited, then visit it and enque it
+            while (itr.hasNext()) {
+                // set neighbor to next pointed to vertex
+                neighbor = itr.next().getOtherVertex();
+                // if pointed to vertex is unvisited, visit it update cameFrom, and enque to queue
+                if (! neighbor.getVisited()) {
+                    neighbor.setCameFrom(current);
+                    neighbor.setVisited(true);
+                    Q.addLast(neighbor);
+                }
+            }
+        }
 
-		out.println("graph G {");
+        /*check if Q emptied and goal was never reached, meaning there was no path from start to goal
+        state this and return the empty list.*/
+        if (! current.equals(goal)) {
+            System.out.println("There was no path found from the vertex " + startName + " to the vertex " + goalName + "!");
+            return path;
+        }
 
-		for (int i = 0; i < vertexCount; i++)
-			vertex[i] = new Vertex("v" + i);
+        //LinkedList to hold the vertex names of the found path in reverse
+        LinkedList<String> reversePath = new LinkedList<String>();
 
-		int rand1 = rng.nextInt(vertexCount);
-		int rand2 = rng.nextInt(vertexCount);
-		
-		if (acyclic)
-			for (int i = 0; i < edgeDensity * vertexCount; i++)
-			{
-				rand1 = rng.nextInt(vertexCount);
-				rand2 = rng.nextInt(vertexCount);
+        // first add the goal before looping
+        reversePath.add(goal.getName());
+        // continuos loop until goal equal startVertex
+        while (! goal.equals(start)) {
+            reversePath.addLast(goal.getCameFrom().getName());
+            goal = goal.getCameFrom();
+        }
 
-				for(Edge e : vertex[rand1].getEdges())
-					while(e.getOtherVertex().equals(vertex[rand2]))
-						rand2 = rng.nextInt(vertexCount);
-				
-				while (rand2 <= rand1)
-				{
-					rand1 = rng.nextInt(vertexCount);
-					rand2 = rng.nextInt(vertexCount);
-					
-					for(Edge e : vertex[rand1].getEdges())
-						while(e.getOtherVertex().equals(vertex[rand2]))
-							rand2 = rng.nextInt(vertexCount);
-							if(rand2 <= rand1)
-								rand2 = rng.nextInt(vertexCount);
-				}				 
+        // remove last items adding to path
+        while (! reversePath.isEmpty())
+            path.add(reversePath.removeLast());
 
-				vertex[rand1].addEdge(vertex[rand2]);
-				
-				out.print("\t" + vertex[rand1].getName() + edgeOp + vertex[rand2].getName());
+        //return completed array list
+        return path;
+    }
 
-				if (weighted)
-					out.print(" [label=" + rng.nextInt(vertexCount * 10) + "]");
+    /**
+     * Performs Dijkstra's routine on a weighted graph to determine the cheapest path from start vertex to a goal vertex.
+     * (See Lecture 19 for the algorithm.)
+     * <p/>
+     * Uses Java's PriorityQueue class to find the "unvisited vertex with smallest distance from start".
+     * See the API for PriorityQueue, and ask the course staff if you need help.
+     *
+     * @param graph - The graph object to be traversed
+     * @param startName - Name of the starting vertex in the path
+     * @param goalName  - Name of the ending vertex in the path
+     * @return a list of the vertices that make up the cheapest path from the starting vertex (inclusive) to the
+     * ending vertex (inclusive) based on weight associated with the edges between the graphs vertices
+     * @throws UnsupportedOperationException if the graph is not weighted, or there are no vertices in the graph
+     *                                       with the names startName or goalName
+     */
+    public static List<String> dijkstrasShortestPath(Graph graph, String startName, String goalName) {
+        // TODO
 
-				out.print("\n");
-			}
-		else
-			for (int i = 0; i < edgeDensity * vertexCount; i++) 
-			{
-				rand1 = rng.nextInt(vertexCount);
-				rand2 = rng.nextInt(vertexCount);
-				
-				while (rand2 == rand1)
-				{
-					rand2 = rng.nextInt(vertexCount);
-				}
-				out.print("\t" + vertex[rand1].getName() + edgeOp + vertex[rand2].getName());
+        return null;
+    }
 
-				if (weighted)
-					out.print(" [label=" + rng.nextInt(vertexCount * 10) + "]");
+    /**
+     * Performs a topological sort of the vertices in a directed acyclic graph.
+     * (See Lecture 19 for the algorithm.)
+     *
+     * @param graph - The graph object to be traversed
+     * @return a list of the vertex names in topologically sorted order
+     * @throws UnsupportedOperationException if the graph is undirected, or it is cyclic.
+     */
+    public static List<String> topologicalSort(Graph graph) {
+        //first check that the specified graph is directed & acyclic, if not throw exception.
+        if (! graph.getDirected() || isCyclic(graph))
+            throw new UnsupportedOperationException("You cannot perform topological sort on an undirected or cyclic graph!");
 
-				out.print("\n");
-			}
+        //get copy of HashMap to perform topologicalSort, this does not change original graphs HashMap values.
+        HashMap<String,Vertex> map = new HashMap<String,Vertex>(graph.getVertices());
 
-		out.println("}");
-		out.close();
-	}
-	
-	/**
-	 * Builds a graph according to the edges specified in the given DOT file (e.g., "a -- b" or "a -> b"). 
-	 * Accepts directed ("digraph") or undirected ("graph") graphs.
-	 * 
-	 * Accepts many valid DOT files (see examples posted with assignment). 
-	 * --accepts \\-style comments 
-	 * --accepts one edge per line or edges terminated with ; 
-	 * --does not accept attributes in [] (e.g., [label = "a label"])
-	 * 
-	 * @param filename - name of the DOT file
-	 */
-	public static Graph buildGraphFromDotFile(String filename)
-	{
-		Graph g = new Graph();
 
-		Scanner s = null;
-		try
-		{
-			s = new Scanner(new File(filename)).useDelimiter(";|\n");
-		} 
-		catch (Exception e)
-		{
-			System.out.print("Unable to utilize the graph .dot file: ");
-			System.err.println(e.getMessage());
-		}
 
-		// Determine if graph is directed or not (i.e., look for "digraph id {" or "graph id {")
-		String line = "", edgeOp = "";
+        return null;
+    }
 
-		while (s.hasNext())
-		{
-			line = s.next();
+    /**
+     * Builds a graph according to the edges specified in the given DOT file (e.g., "a -- b" or "a -> b").
+     * Accepts directed ("digraph") or undirected ("graph") graphs.
+     * <p/>
+     * Accepts many valid DOT files (see examples posted with assignment).
+     * --accepts \\-style comments
+     * --accepts one edge per line or edges terminated with ;\
+     * --accepts label attributes (e.g., [label = "a label"]) for weights
+     *
+     * @param filename - name of the DOT file
+     */
+    public static void generateGraphInDotFile(String filename, int vertexCount, int edgeDensity, boolean directed, boolean acyclic, boolean weighted) {
+        PrintWriter out = null;
 
-			// Skip //-style comments.
-			line = line.replaceFirst("//.*", "");
+        try {
+            out = new PrintWriter(filename);
+        } catch (Exception e) {
+            System.out.print("Unable to utilize the graph .dot file name: ");
+            System.err.println(e.getMessage());
+        }
 
-			if (line.indexOf("digraph") >= 0)
-			{
-				g.setDirected(true); 
-				edgeOp = "->";
-				line = line.replaceFirst(".*\\{", "");
-				break;
-			}
-			if (line.indexOf("graph") >= 0)
-			{
-				g.setDirected(false);
-				edgeOp = "--";
-				line = line.replaceFirst(".*\\{", "");
-				break;
-			}
-		}
+        Vertex[] vertex = new Vertex[vertexCount];
+        Random rng = new Random();
 
-		line = s.next();
-		boolean weighted = line.contains("label");
+        String edgeOp = "--";
 
-		if (weighted)
-			g.setWeighted(true);
+        if (directed) {
+            out.print("di");
+            edgeOp = "->";
+        }
 
-		// Look for edge operators -- (or ->) and determine the left and right vertices for each edge.
-		while (s.hasNext())
-		{
-			String[] substring2 = null;
-			String[] substring = line.split(edgeOp);
+        out.println("graph G {");
 
-			if (weighted)
-			{
-				substring2 = line.split(" ");
-				substring = substring2[0].split(edgeOp);
-			}
+        for (int i = 0; i < vertexCount; i++)
+            vertex[i] = new Vertex("v" + i);
 
-			for (int i = 0; i < substring.length - 1; i += 2)
-			{
-				// remove " and trim whitespace from node string on the left
-				String vertex1 = substring[0].replace("\"", "").trim();
-				if (vertex1.equals(""))
-					continue;
+        int rand1 = rng.nextInt(vertexCount);
+        int rand2 = rng.nextInt(vertexCount);
 
-				String vertex2 = substring[1].replace("\"", "").trim();
-				if (vertex2.equals(""))
-					continue;
+        if (acyclic)
+            for (int i = 0; i < edgeDensity * vertexCount; i++) {
+                rand1 = rng.nextInt(vertexCount);
+                rand2 = rng.nextInt(vertexCount);
 
-				if (weighted)
-				{
-					String[] substring3 = substring2[1].split("=");
-					int weight = Integer.parseInt(substring3[1].replace("]", "").trim());
-					g.addEdgeWeighted(vertex1, vertex2, weight);
-				} else
-					g.addEdge(vertex1, vertex2);
-			}
+                for (Edge e : vertex[rand1].getEdges())
+                    while (e.getOtherVertex().equals(vertex[rand2]))
+                        rand2 = rng.nextInt(vertexCount);
 
-			if (substring[substring.length - 1].indexOf("}") >= 0)
-				break;
+                while (rand2 <= rand1) {
+                    rand1 = rng.nextInt(vertexCount);
+                    rand2 = rng.nextInt(vertexCount);
 
-			line = s.next();
+                    for (Edge e : vertex[rand1].getEdges())
+                        while (e.getOtherVertex().equals(vertex[rand2]))
+                            rand2 = rng.nextInt(vertexCount);
+                    if (rand2 <= rand1)
+                        rand2 = rng.nextInt(vertexCount);
+                }
 
-			// Skip //-style comments.
-			line = line.replaceFirst("//.*", "");
-		}
+                vertex[rand1].addEdge(vertex[rand2]);
 
-		return g;
-	}
+                out.print("\t" + vertex[rand1].getName() + edgeOp + vertex[rand2].getName());
+
+                if (weighted)
+                    out.print(" [label=" + rng.nextInt(vertexCount * 10) + "]");
+
+                out.print("\n");
+            }
+        else
+            for (int i = 0; i < edgeDensity * vertexCount; i++) {
+                rand1 = rng.nextInt(vertexCount);
+                rand2 = rng.nextInt(vertexCount);
+
+                while (rand2 == rand1) {
+                    rand2 = rng.nextInt(vertexCount);
+                }
+                out.print("\t" + vertex[rand1].getName() + edgeOp + vertex[rand2].getName());
+
+                if (weighted)
+                    out.print(" [label=" + rng.nextInt(vertexCount * 10) + "]");
+
+                out.print("\n");
+            }
+
+        out.println("}");
+        out.close();
+    }
+
+    /**
+     * Builds a graph according to the edges specified in the given DOT file (e.g., "a -- b" or "a -> b").
+     * Accepts directed ("digraph") or undirected ("graph") graphs.
+     * <p/>
+     * Accepts many valid DOT files (see examples posted with assignment).
+     * --accepts \\-style comments
+     * --accepts one edge per line or edges terminated with ;
+     * --does not accept attributes in [] (e.g., [label = "a label"])
+     *
+     * @param filename - name of the DOT file
+     */
+    public static Graph buildGraphFromDotFile(String filename) {
+        Graph g = new Graph();
+
+        Scanner s = null;
+        try {
+            s = new Scanner(new File(filename)).useDelimiter(";|\n");
+        } catch (Exception e) {
+            System.out.print("Unable to utilize the graph .dot file: ");
+            System.err.println(e.getMessage());
+        }
+
+        // Determine if graph is directed or not (i.e., look for "digraph id {" or "graph id {")
+        String line = "", edgeOp = "";
+
+        while (s.hasNext()) {
+            line = s.next();
+
+            // Skip //-style comments.
+            line = line.replaceFirst("//.*", "");
+
+            if (line.indexOf("digraph") >= 0) {
+                g.setDirected(true);
+                edgeOp = "->";
+                line = line.replaceFirst(".*\\{", "");
+                break;
+            }
+            if (line.indexOf("graph") >= 0) {
+                g.setDirected(false);
+                edgeOp = "--";
+                line = line.replaceFirst(".*\\{", "");
+                break;
+            }
+        }
+
+        line = s.next();
+        boolean weighted = line.contains("label");
+
+        if (weighted)
+            g.setWeighted(true);
+
+        // Look for edge operators -- (or ->) and determine the left and right vertices for each edge.
+        while (s.hasNext()) {
+            String[] substring2 = null;
+            String[] substring = line.split(edgeOp);
+
+            if (weighted) {
+                substring2 = line.split(" ");
+                substring = substring2[0].split(edgeOp);
+            }
+
+            for (int i = 0; i < substring.length - 1; i += 2) {
+                // remove " and trim whitespace from node string on the left
+                String vertex1 = substring[0].replace("\"", "").trim();
+                if (vertex1.equals(""))
+                    continue;
+
+                String vertex2 = substring[1].replace("\"", "").trim();
+                if (vertex2.equals(""))
+                    continue;
+
+                if (weighted) {
+                    String[] substring3 = substring2[1].split("=");
+                    int weight = Integer.parseInt(substring3[1].replace("]", "").trim());
+                    g.addEdgeWeighted(vertex1, vertex2, weight);
+                } else
+                    g.addEdge(vertex1, vertex2);
+            }
+
+            if (substring[substring.length - 1].indexOf("}") >= 0)
+                break;
+
+            line = s.next();
+
+            // Skip //-style comments.
+            line = line.replaceFirst("//.*", "");
+        }
+
+        return g;
+    }
+
+    /**
+     * Determines if the specified graph is cyclic or not.
+     *
+     * @return true if the specified graph is cyclic, otherwise false.
+     */
+    public static boolean isCyclic(Graph graph) {
+        // returned variable if this graph is cyclic or not, default is false.
+        boolean cyclic = false;
+
+        // create copy of this graphs HashMap
+        HashMap<String,Vertex> map = new HashMap<String,Vertex>(graph.getVertices());
+
+        // array list to hold all the vertices in this graph, used as starting vertices.
+        Collection<Vertex> allVertices = map.values();
+        // amount of vertices in this graph.
+        int vAmount = allVertices.size();
+
+        // array list matrix to hold lists of neighbors for each starting vertex
+        ArrayList<Vertex>[] neighbors = new ArrayList[vAmount];
+        // initiate each column to contain an empty ArrayList so that no columns are null.
+        for (int i = 0; i < vAmount; i++)
+            neighbors[i] = new ArrayList<Vertex>();
+
+        int index = 0;
+        // fill neighbors matrix
+        for (Vertex vertex : allVertices) {
+            LinkedList<Edge> neighborItr = vertex.getEdges();
+            for (Edge edge : neighborItr)
+                neighbors[index].add(edge.getOtherVertex());
+            index++;
+        }
+
+        // check if there are any paths from each vertexes neighbor back to that vertex.
+        index = 0;
+        for (Vertex vertex : allVertices) {
+            for (Vertex neighbor : neighbors[index]) {
+                if(hasPath(graph, vertex.getName(), neighbor.getName())); {
+                    cyclic = true;
+                    return cyclic;
+                }
+            }
+            index++;
+        }
+        // no paths found, return cyclic value (default false)
+        return cyclic;
+    }
+
+    /**
+     * Determines whether there is a path between the specified start and goal vertices in the specified graph.
+     *
+     * @return true if there is a path between the specified start and goal vertices in the specified graph, otherwise
+     * false.
+     */
+    public static boolean hasPath(Graph graph, String startName, String goalName) {
+        // get graph HashMap to access the vertices by name
+        HashMap<String,Vertex> map = new HashMap<String,Vertex>(graph.getVertices());
+        // throw exception of startName and goalName are not associated with any vertices the HashMap
+        if (! (map.containsKey(startName)) || ! (map.containsKey(goalName)))
+            throw new UnsupportedOperationException("The startName or goalName do not exist!");
+
+        // queue to traverse through and visit neighbors breadth first,implemented with LinkedList
+        LinkedList<Vertex> Q = new LinkedList<Vertex>() {};
+
+        // current vertex, most recently dequeued from list, beginning vertex obtained from map, and neighbor vertex
+        Vertex current, neighbor, start = map.get(startName), goal = map.get(goalName);
+
+        // set start vertex as visited and enque on to queue
+        start.setVisited(true);
+        Q.add(start);
+        // set current to start node at first to avoid
+        current = start;
+
+        // keep visiting neighbors while the queue is not empty
+        while (! Q.isEmpty()) {
+            current = Q.removeFirst();
+            //check if current is equal to goal, if so break from while loop, if not iterate through neighbors
+            if (current.equals(goal))
+                break;
+            // get iterator to traverse neighboring edges
+            Iterator<Edge> itr = current.edges();
+
+            // iterate each neighbor, through the edges, if unvisited, then visit it and enque it
+            while (itr.hasNext()) {
+                // set neighbor to next pointed to vertex
+                neighbor = itr.next().getOtherVertex();
+                // if pointed to vertex is unvisited, visit it update cameFrom, and enque to queue
+                if (! neighbor.getVisited()) {
+                    neighbor.setCameFrom(current);
+                    neighbor.setVisited(true);
+                    Q.addLast(neighbor);
+                }
+            }
+        }
+
+        //check if Q emptied and goal was never reached, meaning there was no path from start to goal and return false;
+        if (! current.equals(goal))
+            return false;
+
+        // if current vertex equals the goal vertex than there is a path.
+        return true;
+    }
 }
