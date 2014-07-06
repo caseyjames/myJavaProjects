@@ -44,10 +44,10 @@ public class GraphUtilTester extends TestCase {
 
     public void testTopologicalSort() throws Exception {
         // first try it on the school course graph provided on moodle
-        Graph examplegraph7 = GraphUtil.buildGraphFromDotFile("examplegraph7.dot");
+        Graph topoTest2 = GraphUtil.buildGraphFromDotFile("topoTest2.dot");
         System.out.println("--------------------------------------------------------------------------");
-        System.out.println("Using topologicalSort on examplegraph6 to produce a sorted list of the it's vertices");
-        System.out.println("\tThe sorted List is: " + GraphUtil.topologicalSort(examplegraph7));
+        System.out.println("Using topologicalSort on topoTest2 to produce a sorted list of the it's vertices");
+        System.out.println("\tThe sorted List is: " + GraphUtil.topologicalSort(topoTest2));
         System.out.println("--------------------------------------------------------------------------");
 
         Graph topoTestGraph = GraphUtil.buildGraphFromDotFile("topoTest.dot");

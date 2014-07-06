@@ -577,7 +577,7 @@ public class GraphUtil {
         index = 0;
         for (Vertex vertex : allVertices) {
             for (Vertex neighbor : neighbors[index])
-                if (hasPath(graph, vertex.getName(), neighbor.getName()))
+                if (hasPath(graph, neighbor.getName(), vertex.getName()))
                     return true;
             index++;
         }
