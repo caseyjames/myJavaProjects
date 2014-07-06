@@ -114,8 +114,8 @@ public class GraphUtil {
         depthFirstSearchRecursive(startVertex, goalVertex);
 
         //after recursive call, if goal vertex has not been visited, state no path found and return empty list
-        if (goalVertex.getVisited() == false) {
-            System.out.println("There was no path found from the vertex " + startName + " to the vertex " + goalName + "!");
+        if (!goalVertex.getVisited()) {
+//            System.out.println("There was no path found from the vertex " + startName + " to the vertex " + goalName + "!");
             return path;
         }
 
@@ -124,7 +124,7 @@ public class GraphUtil {
 
         // first add the goalVertex before looping
         reversePath.add(goalVertex.getName());
-        // continuos loop until goalVertex equal startVertex
+        // continuous loop until goalVertex equal startVertex
         while (! goalVertex.equals(startVertex)) {
             reversePath.addLast(goalVertex.getCameFrom().getName());
             goalVertex = goalVertex.getCameFrom();
@@ -231,7 +231,7 @@ public class GraphUtil {
         /*check if Q emptied and goal was never reached, meaning there was no path from start to goal
         state this and return the empty list.*/
         if (! current.equals(goal)) {
-            System.out.println("There was no path found from the vertex " + startName + " to the vertex " + goalName + "!");
+//            System.out.println("There was no path found from the vertex " + startName + " to the vertex " + goalName + "!");
             return path;
         }
 
@@ -239,8 +239,8 @@ public class GraphUtil {
         LinkedList<String> reversePath = new LinkedList<String>();
 
         // first add the goal before looping
-        reversePath.add(goal.getName());
-        // continuos loop until goal equal startVertex
+        reversePath.addFirst(goal.getName());
+        // continuous loop until goal equal startVertex
         while (! goal.equals(start)) {
             reversePath.addLast(goal.getCameFrom().getName());
             goal = goal.getCameFrom();
@@ -269,10 +269,51 @@ public class GraphUtil {
      * @throws UnsupportedOperationException if the graph is not weighted, or there are no vertices in the graph
      *                                       with the names startName or goalName
      */
-    public static List<String> dijkstrasShortestPath(Graph graph, String startName, String goalName) {
-        // TODO
+    public static List<String> dijkstrasShortestPath(Graph graph, String startName, String goalName) throws UnsupportedOperationException {
+        // make sure the graph given is a supported type (positive weighted)
+        if (!graph.getWeighted())
+            throw new UnsupportedOperationException("Graph needs to be weighted for Dijkstra's algorithm!");
+        // implement the algorithm with a priority queue
+        HashMap<String,Vertex> vertices = graph.getVertices();
+        if (!vertices.containsKey(startName))
+            throw new UnsupportedOperationException("Dijkstra's: the start vertex " + vertices.get(startName) + " was not found!");
+        if (!vertices.containsKey(goalName))
+            throw new UnsupportedOperationException("Dijkstra's: the goal vertex " + vertices.get(goalName) + " was not found!");
+        PriorityQueue<Vertex> queue = new PriorityQueue<Vertex>();
+        Vertex startVertex = vertices.get(startName);
+        startVertex.setCostFromStart(0);
+        queue.add(startVertex);
+        while (queue.size() != 0) {
+            Vertex currentVertex = queue.poll();
+            currentVertex.setVisited(true);
 
-        return null;
+            // iterate through neighbor vertices and set fields appropriately
+            Iterator<Edge> edgeIterator = currentVertex.edges();
+            while (edgeIterator.hasNext()) {
+                Edge neighborEdge = edgeIterator.next();
+                Vertex neighborVertex = neighborEdge.getOtherVertex();
+
+                // set the running cost and cameFrom iff the vertex hasn't been visited or the new path to that vertex is shorter
+                int newCost = currentVertex.getCostFromStart() + neighborEdge.getWeight();
+                if (!neighborVertex.getVisited() || neighborVertex.getCostFromStart() > newCost) {
+                    neighborVertex.setCostFromStart(newCost);
+                    neighborVertex.setVisited(true);
+                    neighborVertex.setCameFrom(currentVertex);
+                    if (queue.contains(neighborVertex)) // update the vertex if it's in the queue
+                        queue.remove(neighborVertex);
+                    queue.add(neighborVertex);
+                }
+            }
+        }
+        // construct the paths from the goal vertex backwards
+        LinkedList<String> path = new LinkedList<String>();
+        path.add(goalName);
+        Vertex currentVertex = vertices.get(goalName);
+        while (currentVertex.getCameFrom() != null) {
+            path.addFirst(currentVertex.getCameFrom().getName());
+            currentVertex = currentVertex.getCameFrom();
+        }
+        return path;
     }
 
     /**
@@ -288,12 +329,37 @@ public class GraphUtil {
         if (! graph.getDirected() || isCyclic(graph))
             throw new UnsupportedOperationException("You cannot perform topological sort on an undirected or cyclic graph!");
 
-        //get copy of HashMap to perform topologicalSort, this does not change original graphs HashMap values.
+        // get copy of HashMap to perform topologicalSort, this does not change original graphs HashMap values.
         HashMap<String,Vertex> map = new HashMap<String,Vertex>(graph.getVertices());
+        // Collection of vertices to sort through
+        Collection<Vertex> vertices = map.values();
 
+        // queue to traverse through vertices with different levels of inDegree value
+        Queue<Vertex> Q = new LinkedList<Vertex>();
+        // ArrayList to hold sorted vertex names, size is initialized to amount of vertices.
+        ArrayList<String> sortedNames = new ArrayList<String>(vertices.size());
 
+        // enque the first vertices with inDegree of 0 to Queue.
+        for (Vertex vertex : vertices)
+            if (vertex.getInDegree() == 0)
+                Q.add(vertex);
 
-        return null;
+        //most recent vertex removed from the Q
+        Vertex currentVertex;
+        // perform topological sort algorithm until the queue is empty, as shown in lecture 19
+        while (! Q.isEmpty()) {
+            currentVertex = Q.remove();
+            sortedNames.add(currentVertex.getName());
+            LinkedList<Edge> currentEdges = currentVertex.getEdges();
+            // decrement all neighbors inDegree by 1, if any neighbor now has inDegree of 0, enqueue
+            for (Edge e : currentEdges) {
+                e.getOtherVertex().decInDegree();
+                if (e.getOtherVertex().getInDegree() == 0)
+                    Q.add(e.getOtherVertex());
+            }
+        }
+        // topological sort is done and return sortedNames list.
+        return sortedNames;
     }
 
     /**
@@ -307,7 +373,7 @@ public class GraphUtil {
      *
      * @param filename - name of the DOT file
      */
-    public static void generateGraphInDotFile(String filename, int vertexCount, int edgeDensity, boolean directed, boolean acyclic, boolean weighted) {
+    public static boolean generateGraphInDotFile(String filename, int vertexCount, int edgeDensity, boolean directed, boolean acyclic, boolean weighted) {
         PrintWriter out = null;
 
         try {
@@ -328,6 +394,7 @@ public class GraphUtil {
         }
 
         out.println("graph G {");
+        out.println("dpi=300");
 
         for (int i = 0; i < vertexCount; i++)
             vertex[i] = new Vertex("v" + i);
@@ -382,6 +449,7 @@ public class GraphUtil {
 
         out.println("}");
         out.close();
+        return true;
     }
 
     /**
@@ -481,8 +549,6 @@ public class GraphUtil {
      * @return true if the specified graph is cyclic, otherwise false.
      */
     public static boolean isCyclic(Graph graph) {
-        // returned variable if this graph is cyclic or not, default is false.
-        boolean cyclic = false;
 
         // create copy of this graphs HashMap
         HashMap<String,Vertex> map = new HashMap<String,Vertex>(graph.getVertices());
@@ -510,16 +576,13 @@ public class GraphUtil {
         // check if there are any paths from each vertexes neighbor back to that vertex.
         index = 0;
         for (Vertex vertex : allVertices) {
-            for (Vertex neighbor : neighbors[index]) {
-                if(hasPath(graph, vertex.getName(), neighbor.getName())); {
-                    cyclic = true;
-                    return cyclic;
-                }
-            }
+            for (Vertex neighbor : neighbors[index])
+                if (hasPath(graph, vertex.getName(), neighbor.getName()))
+                    return true;
             index++;
         }
         // no paths found, return cyclic value (default false)
-        return cyclic;
+        return false;
     }
 
     /**
