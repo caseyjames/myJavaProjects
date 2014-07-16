@@ -104,7 +104,7 @@ public class BinarySearchTree<Type> {
             }
         }
         // if the data is at the current node don't change anything and return false
-        if (compare(item,currentNode.getData()) == 0)
+        if (compare(item, currentNode.getData()) == 0)
             return false;
             // implement adding to left of currentNode
         else if (compare(item,currentNode.getData()) < 0) {
@@ -173,7 +173,7 @@ public class BinarySearchTree<Type> {
             Type data = currentNode.getData();
                 /* the if and if else statements that follow simply compare item against the data in the current node
                    and either change the node to iterate further down the BST or return as appropriate */
-            if (compare(item,data) == 0)
+            if (compare(item, data) == 0)
                 return true;
             else if (compare(item,data) < 0) {
                 if (currentNode.getLeft() == null)
@@ -259,7 +259,7 @@ public class BinarySearchTree<Type> {
             // if either child node matches the data we're looking for stop looping and remove the node
             if (currentNode.getLeft() != null && compare(item,currentNode.getLeft().getData()) == 0)
                 break;
-            if (currentNode.getRight() != null && compare(item,currentNode.getRight().getData()) == 0)
+            if (currentNode.getRight() != null && compare(item, currentNode.getRight().getData()) == 0)
                 break;
 
             // if the data should be left of the current node check the left child
