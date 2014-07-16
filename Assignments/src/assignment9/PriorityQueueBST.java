@@ -1,7 +1,5 @@
 package assignment9;
 
-import assignment6.BinarySearchTree;
-
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 

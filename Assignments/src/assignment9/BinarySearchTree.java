@@ -93,7 +93,7 @@ public class BinarySearchTree<Type> {
             if (currentNode.data.equals(item))
                 return false;
                 // if the item should go to the left either change the current node to the left subtree or create a left node
-            else if (item.compare(currentNode.getData()) < 0) {
+            else if (compare(item,currentNode.getData()) < 0) {
                 if (currentNode.getLeft() != null)
                     currentNode = currentNode.getLeft();
                 else break;
@@ -104,10 +104,10 @@ public class BinarySearchTree<Type> {
             }
         }
         // if the data is at the current node don't change anything and return false
-        if (item.compare(currentNode.getData()) == 0)
+        if (compare(item,currentNode.getData()) == 0)
             return false;
             // implement adding to left of currentNode
-        else if (item.compare(currentNode.getData()) < 0) {
+        else if (compare(item,currentNode.getData()) < 0) {
             currentNode.setLeft(new BinaryNode(item));
             size++;
             return true;
@@ -173,9 +173,9 @@ public class BinarySearchTree<Type> {
             Type data = currentNode.getData();
                 /* the if and if else statements that follow simply compare item against the data in the current node
                    and either change the node to iterate further down the BST or return as appropriate */
-            if (item.compare(data) == 0)
+            if (compare(item,data) == 0)
                 return true;
-            else if (item.compare(data) < 0) {
+            else if (compare(item,data) < 0) {
                 if (currentNode.getLeft() == null)
                     return false;
                 currentNode = currentNode.getLeft();
@@ -187,7 +187,7 @@ public class BinarySearchTree<Type> {
         }
         // this statement is only reached when the while loop hits a leaf node, in which case only the currentNode's
         //  data has to be checked
-        return (item.compare(currentNode.getData()) == 0);
+        return (compare(item,currentNode.getData()) == 0);
     }
 
     /**
@@ -239,12 +239,12 @@ public class BinarySearchTree<Type> {
         if (isEmpty())
             return false;
         // handle removing final node - reset the BST and return
-        if (size == 1 && item.compare(root.getData()) == 0) {
+        if (size == 1 && compare(item,root.getData()) == 0) {
             clear();
             return true;
         }
         // handle removing root by removing root's successor and copying the removed node's data to root
-        if (item.compare(root.getData()) == 0) {
+        if (compare(item,root.getData()) == 0) {
             Type data = root.getSuccessor().getData();
             remove(data);
             root.setData(data);
@@ -257,16 +257,16 @@ public class BinarySearchTree<Type> {
         while (true) {
             // check while loop condition here to avoid null pointer
             // if either child node matches the data we're looking for stop looping and remove the node
-            if (currentNode.getLeft() != null && item.compare(currentNode.getLeft().getData()) == 0)
+            if (currentNode.getLeft() != null && compare(item,currentNode.getLeft().getData()) == 0)
                 break;
-            if (currentNode.getRight() != null && item.compare(currentNode.getRight().getData()) == 0)
+            if (currentNode.getRight() != null && compare(item,currentNode.getRight().getData()) == 0)
                 break;
 
             // if the data should be left of the current node check the left child
-            if (item.compare(currentNode.getData()) < 0) {
+            if (compare(item,currentNode.getData()) < 0) {
                 if (currentNode.getLeft() == null) // if no left child then the node doesn't exist and cannot be removed
                     return false;
-                if (item.compare(currentNode.getLeft().getData()) == 0) // if the left child matches the data then remove the node
+                if (compare(item,currentNode.getLeft().getData()) == 0) // if the left child matches the data then remove the node
                     break;
                 // if a left subtree exists and the root doesn't match the data then continue iterating down the BST
                 currentNode = currentNode.getLeft();
@@ -275,14 +275,14 @@ public class BinarySearchTree<Type> {
             else {
                 if (currentNode.getRight() == null) // if no right child then the node doesn't exist and cannot be removed
                     return false;
-                if (item.compare(currentNode.getRight().getData()) == 0) // if the right child matches the data then store then remove the node
+                if (compare(item,currentNode.getRight().getData()) == 0) // if the right child matches the data then store then remove the node
                     break;
                 // if a right subtree exists and the root doesn't match the data then continue iterating down the BST
                 currentNode = currentNode.getRight();
             }
         }
         // set the direction according to which node matches the data
-        int direction = (currentNode.getLeft() != null && item.compare(currentNode.getLeft().getData()) == 0) ? - 1 : 1;
+        int direction = (currentNode.getLeft() != null && compare(item,currentNode.getLeft().getData()) == 0) ? - 1 : 1;
 
         // these statements only execute if the correct node was found, in which case the node should be removed
         //  according to the number of children, the size should decrement, and this method should return true.
