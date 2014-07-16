@@ -13,6 +13,7 @@ import java.util.NoSuchElementException;
  * @author Paymon Saebi
  * @author Casey Nordgran
  * @author
+ * @version 7/15/2014
  */
 public class PriorityQueueHEAP<AnyType> {
     private AnyType[] array;
@@ -60,14 +61,19 @@ public class PriorityQueueHEAP<AnyType> {
     }
 
     /**
+     * Returns the minimum item in this priority que which must always be the element at index 0.
+     * (runs in constant time)
+     *
      * @return the minimum item in this priority queue.
      * @throws java.util.NoSuchElementException if this priority queue is empty.
-     *                                          <p/>
-     *                                          (Runs in constant time.)
      */
     public AnyType findMin() throws NoSuchElementException {
-        //TODO
-        return null;
+        // first check for empty priority queue and throw exception if it is
+        if (currentSize == 0)
+            throw new NoSuchElementException("This priority queue is empty!");
+
+        // return element at index zero, as this is always the minimum element
+        return array[0];
     }
 
     /**
@@ -78,8 +84,19 @@ public class PriorityQueueHEAP<AnyType> {
      * @throws java.util.NoSuchElementException if this priority queue is empty.
      */
     public AnyType deleteMin() throws NoSuchElementException {
-        //TODO
-        return null;
+        // first check for empty priority queue and throw exception if it is
+        if (currentSize == 0)
+            throw new NoSuchElementException("This priority queue is empty!");
+        // store item at index 0 to be returned
+        AnyType minItem = array[0];
+        // set last item to index 0 and set it's previous index to null
+        array[0] = array[currentSize - 1];
+        array[currentSize - 1] = null;
+        // now percolateDown the newly set element at index 0, and decrement size
+        percolateDown(0);
+        currentSize--;
+        // return previous element at index 0 before the remove
+        return minItem;
     }
 
     /**
@@ -96,6 +113,7 @@ public class PriorityQueueHEAP<AnyType> {
         // index passed to percolateUp is the next open leaf, at index = currentSize
         array[currentSize] = x;
         percolateUp(currentSize);
+        currentSize++;
     }
 
     /**
@@ -104,8 +122,13 @@ public class PriorityQueueHEAP<AnyType> {
      * @return object array containing the pq elements
      */
     public Object[] toArray() {
-        //TODO
-        return null;
+        // create new object array of the exact size of this list
+        Object[] returnArray = new Object[currentSize];
+        // copy each element of this list to the object array starting at index 0
+        for (int i = 0; i < currentSize; i++)
+            returnArray[i] = array[i];
+        // return the object array
+        return returnArray;
     }
 
     /**
