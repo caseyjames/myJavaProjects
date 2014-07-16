@@ -12,38 +12,36 @@ import java.io.FileInputStream;
 public class MessageDecoder {
 
     public static void main(String[] args) {
-        // array of bytes to hold input from file
-        byte[] fileData = new byte[376];
-        // FileInputStream object to read bytes from the secret.txt file
-        FileInputStream inputBytes;
+        byte[] fileData = new byte[376]; // array of bytes to store input
+        FileInputStream inputBytes;  // create FileInputStream object
         try {
             inputBytes = new FileInputStream(new File("secret.txt"));
-        }
-        catch(Exception e){
+        }catch(Exception e){
             System.err.println(e.getMessage());
             return;
         }
         // read enough bytes to fill fileData
-        int feedBack =0;
         try {
-            feedBack = inputBytes.read(fileData);
+            if (inputBytes.read(fileData) != 376) {
+                System.out.println("The correct number of bytes were not retrieved from the file!");
+                return;
+            }
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
-        if (feedBack != 376)
-            System.out.println("The correct number of bytes were not retrieved from the file!");
-        // integer to hold 8 bits and convert to a char
-        int nextChar = 0;
-        // String to add characters and hold the final message
-        String secret = "";
-        // obtain key bits and perform algorithm to produce secret message
+        int nextChar = 0;   // int to hold 8 bits at a time
+        String secretMessage = "";
+        /* nested for-loops to obtain 3rd bit (index 2) of each byte, multiplied by 2^(j) to assure correct bit
+            position and added it to nextChar. When 8 bits fill nextChar, it's converted to char, added to
+            secretMessage, then reset to zero */
         int index = 0;
         for (int i = 0; i < 47; i++) {
             for (int j = 0; j < 8; j++)
                 nextChar += ((fileData[index++] >> 2)%2)*((int)Math.pow(2.0, (double)j));
-            secret += (char) nextChar;
+            secretMessage += (char) nextChar;
             nextChar = 0;
         }
-        System.out.println(secret);
+        // print secret message to console
+        System.out.println(secretMessage);
     }
 }
