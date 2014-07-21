@@ -17,8 +17,9 @@ public class UserController {
      * @param args
      */
     public static void main(String[] args) {
-        args = new String[10];
-        args[0] = "tasks.txt";
+        // just for testing
+//        args = new String[10];
+//        args[0] = "tasks.txt";
 
         // check that atleast one argument was passed
         if (args.length == 0) {
