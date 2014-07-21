@@ -53,7 +53,7 @@ public class PriorityQueueBST<AnyType> {
      * (Runs in logarithmic time.)
      *
      * @return the minimum item in this priority queue.
-     * @throws NoSuchElementException if this priority queue is empty.
+     * @throws java.util.NoSuchElementException if this priority queue is empty.
      */
     public AnyType findMin() throws NoSuchElementException {
         // first check that the BST is not empty, if it is throw exception
@@ -67,7 +67,7 @@ public class PriorityQueueBST<AnyType> {
      * Removes and returns the minimum item in this priority queue.
      * (Runs in logarithmic time.)
      *
-     * @throws NoSuchElementException if this priority queue is empty.
+     * @throws java.util.NoSuchElementException if this priority queue is empty.
      */
     public AnyType deleteMin() throws NoSuchElementException {
         // first check that the BST is not empty, if it is throw exception

@@ -65,7 +65,7 @@ public class PriorityQueueHEAP<AnyType> {
      * (runs in constant time)
      *
      * @return the minimum item in this priority queue.
-     * @throws NoSuchElementException if this priority queue is empty.
+     * @throws java.util.NoSuchElementException if this priority queue is empty.
      */
     public AnyType findMin() throws NoSuchElementException {
         // first check for empty priority queue and throw exception if it is
@@ -81,7 +81,7 @@ public class PriorityQueueHEAP<AnyType> {
      * (Runs in logarithmic time.)
      *
      * @return The minimum item in the priority queue
-     * @throws NoSuchElementException if this priority queue is empty.
+     * @throws java.util.NoSuchElementException if this priority queue is empty.
      */
     public AnyType deleteMin() throws NoSuchElementException {
         // first check for empty priority queue and throw exception if it is

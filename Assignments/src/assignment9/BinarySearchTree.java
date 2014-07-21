@@ -329,7 +329,7 @@ public class BinarySearchTree<Type> {
     /**
      * Returns the first (i.e., smallest) item in this set.
      *
-     * @throws NoSuchElementException if the set is empty
+     * @throws java.util.NoSuchElementException if the set is empty
      */
     public Type first() throws NoSuchElementException {
         // throw an exception for an empty set
@@ -345,7 +345,7 @@ public class BinarySearchTree<Type> {
     /**
      * Returns the last (i.e., largest) item in this set.
      *
-     * @throws NoSuchElementException if the set is empty
+     * @throws java.util.NoSuchElementException if the set is empty
      */
     public Type last() throws NoSuchElementException {
         // throw an exception for an empty set
@@ -862,7 +862,7 @@ public class BinarySearchTree<Type> {
          * This method applies to binary search trees only (not general binary trees).
          *
          * @return The successor of this node.
-         * @throws NoSuchElementException if the node has no successor (is a leaf node)
+         * @throws java.util.NoSuchElementException if the node has no successor (is a leaf node)
          *                                          <p/>
          *                                          The successor is a node which can replace this node in a case-3 BST deletion.
          *                                          It is either the smallest node in the right subtree, or the largest node in
@@ -901,7 +901,7 @@ public class BinarySearchTree<Type> {
          * Removes the child of the this node according to the passed direction
          *
          * @param direction an int indicating which child to remove: -1 for the left, 1 for the right
-         * @throws NoSuchElementException if the node doesn't have the indicated child, or the node is null
+         * @throws java.util.NoSuchElementException if the node doesn't have the indicated child, or the node is null
          */
         public void remove(int direction) {
             // throw Exceptions for every invalid removal case, with a message as appropriate
