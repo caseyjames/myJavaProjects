@@ -12,8 +12,8 @@ import java.util.NoSuchElementException;
  *
  * @author Paymon Saebi
  * @author Casey Nordgran
- * @author
- * @version 7/15/2014
+ * @author Cody Cortello
+ * @version 7/16/2014
  */
 public class PriorityQueueHEAP<AnyType> {
     private AnyType[] array;
@@ -65,7 +65,7 @@ public class PriorityQueueHEAP<AnyType> {
      * (runs in constant time)
      *
      * @return the minimum item in this priority queue.
-     * @throws java.util.NoSuchElementException if this priority queue is empty.
+     * @throws NoSuchElementException if this priority queue is empty.
      */
     public AnyType findMin() throws NoSuchElementException {
         // first check for empty priority queue and throw exception if it is
@@ -81,7 +81,7 @@ public class PriorityQueueHEAP<AnyType> {
      * (Runs in logarithmic time.)
      *
      * @return The minimum item in the priority queue
-     * @throws java.util.NoSuchElementException if this priority queue is empty.
+     * @throws NoSuchElementException if this priority queue is empty.
      */
     public AnyType deleteMin() throws NoSuchElementException {
         // first check for empty priority queue and throw exception if it is
@@ -92,9 +92,9 @@ public class PriorityQueueHEAP<AnyType> {
         // set last item to index 0 and set it's previous index to null
         array[0] = array[currentSize - 1];
         array[currentSize - 1] = null;
+        currentSize--;
         // now percolateDown the newly set element at index 0, and decrement size
         percolateDown(0);
-        currentSize--;
         // return previous element at index 0 before the remove
         return minItem;
     }
@@ -140,7 +140,6 @@ public class PriorityQueueHEAP<AnyType> {
         if (cmp == null)
             return ((Comparable<? super AnyType>) lhs).compareTo(rhs); // safe to ignore warning
         // We won't test your code on non-Comparable types if we didn't supply a Comparator
-
         return cmp.compare(lhs, rhs);
     }
 
@@ -173,11 +172,27 @@ public class PriorityQueueHEAP<AnyType> {
      * @param index array index of specified element to percolate up
      */
     private void percolateUp(int index) {
+        if (index <= 0)
+            return;
         // store item at specified index to be inserted at correct location instead of swaping
         AnyType item = array[index];
         // continually move next parent down to current index if item is less than parent.
-        while (compare(item, array[Math.abs((index - 1) / 2)]) < 0 && (index - 1) / 2 >= 0)
-            array[index] = array[(index++ - 1) / 2];
+        do {
+            if (compare(item, array[(index - 1) / 2]) < 0) {
+                array[index] = array[(index - 1) / 2];
+            } else
+                break;
+            // update index
+            index = (index - 1) / 2;
+        } while ((index - 1) / 2 > 0);
+        // if there is still a parent index at 0, if so compare and swap if necessary.
+        if (index > 0 && (index - 1) / 2 <= 0) {
+            if (compare(item, array[0]) < 0) {
+                array[index] = array[0];
+                array[0] = item;
+                return;
+            }
+        }
         // after percolate up reaches correct spot, item is inserted at current index.
         array[index] = item;
     }
@@ -188,12 +203,12 @@ public class PriorityQueueHEAP<AnyType> {
      */
     private void percolateDown(int index) {
         // if this index has no children then return
-        if (index*2+1 >= currentSize)
+        if (index * 2 + 1 >= currentSize)
             return;
         // in the case of 1 child
         if (index * 2 + 1 < currentSize && index * 2 + 2 >= currentSize) {
-            if (compare(array[index],array[index*2+1])>0) {
-                swap(index, index*2+1);
+            if (compare(array[index], array[index * 2 + 1]) > 0) {
+                swap(index, index * 2 + 1);
                 return;
             }
             return;
@@ -201,13 +216,13 @@ public class PriorityQueueHEAP<AnyType> {
         // case of 2 children
         int smallerChild;
         // determine smaller of the two children
-        if (compare(array[index*2+1],array[index*2+2])<=0)
-            smallerChild = index*2+1;
+        if (compare(array[index * 2 + 1], array[index * 2 + 2]) <= 0)
+            smallerChild = index * 2 + 1;
         else
-            smallerChild = index*2+2;
+            smallerChild = index * 2 + 2;
         // compare smaller child with item at current index
-        if (compare(array[index],array[smallerChild])>0){
-            swap(index,smallerChild);
+        if (compare(array[index], array[smallerChild]) > 0) {
+            swap(index, smallerChild);
             percolateDown(smallerChild);
         }
         // if item is already in the correct position, just return
@@ -228,6 +243,7 @@ public class PriorityQueueHEAP<AnyType> {
 
     /**
      * Helper method for swapping the two elements indicated at the specified index in this array.
+     *
      * @param ind1 index of first element to be swapped.
      * @param ind2 index of second element to be swapped.
      */
