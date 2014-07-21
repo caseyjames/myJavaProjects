@@ -1,4 +1,4 @@
-package spellCheckGUI;
+package myGUI;
 
 import javax.swing.*;
 import java.awt.*;

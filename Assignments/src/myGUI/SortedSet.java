@@ -1,4 +1,4 @@
-package spellCheckGUI;
+package myGUI;
 
 import java.util.ArrayList;
 import java.util.Collection;

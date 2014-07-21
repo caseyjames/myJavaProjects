@@ -1,4 +1,4 @@
-package spellCheckGUI;
+package myGUI;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;

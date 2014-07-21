@@ -1,4 +1,4 @@
-package spellCheckGUI;
+package myGUI;
 
 import junit.framework.TestCase;
 
