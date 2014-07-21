@@ -15,19 +15,19 @@ public class GUI extends JPanel implements ActionListener {
     private JPanel forTextFile;
     private JPanel forRadioButtons;
     private JPanel forWriteFile;
-    private JTextArea output;
+    public static JTextArea output;
     private JTextField dictionary;
     private JTextField textFile;
     private JTextField writeFile;
     private JRadioButton printScreen;
     private JRadioButton printFile;
     private JButton runCheck;
-    public String[] argsToPass = new String[3];
+    private String[] argsToPass = new String[3];
 
     public GUI() {
-        runCheck.addActionListener(this);
         makeObjects();
         theLayout();
+        runCheck.addActionListener(this);
     }
 
     private void makeObjects() {
@@ -74,7 +74,7 @@ public class GUI extends JPanel implements ActionListener {
     }
 
     private void theLayout() {
-        setLayout(new GridBagLayout());
+        setLayout(new GridLayout(7, 1));
         add(title);
         add(forDictionary);
         add(forTextFile);
@@ -91,6 +91,9 @@ public class GUI extends JPanel implements ActionListener {
             argsToPass[2] = "-p";
         else
             argsToPass[2] = "-f";
+
+        output = new JTextArea();
+        SpellChecker.main(argsToPass);
     }
 
 }

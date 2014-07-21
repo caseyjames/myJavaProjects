@@ -21,7 +21,8 @@ public class SpellChecker {
 
         //DO: Check parameter size according to the handout
         if (args.length < 2 || args.length > 3) {
-            System.out.println("Incorrect number of arguments!");
+            GUI.output.append("Incorrect number of arguments!\n");
+//            System.out.println("Incorrect number of arguments!");
             return;
         }
 
@@ -31,7 +32,8 @@ public class SpellChecker {
         //DO: Check to see if this dictionary file is a normal file
         //Use the File class isFile() method
         if (! dictionary.isFile()) {
-            System.out.println("Unable to use the dictionary file!");
+            GUI.output.append("Unable to use the dictionary file!\n");
+//            System.out.println("Unable to use the dictionary file!");
             return;
         }
 
@@ -41,7 +43,8 @@ public class SpellChecker {
         //DO: Check to see if this document file is a normal file
         //Use the File class isFile() method
         if (! document.isFile()) {
-            System.out.println("Unable to use the document file!");
+            GUI.output.append("Unable to use the document file!\n");
+//            System.out.println("Unable to use the document file!");
             return;
         }
 
@@ -50,7 +53,8 @@ public class SpellChecker {
             if (args[2].equalsIgnoreCase("-p") || args[2].equalsIgnoreCase("-f"))
                 option = args[2];
             else {
-                System.out.println("Invalid printing or filing option argument!");
+                GUI.output.append("Invalid printing or filing option argument!\n");
+//                System.out.println("Invalid printing or filing option argument!");
                 return;
             }
 
@@ -65,10 +69,13 @@ public class SpellChecker {
         // Creating a list of misspelled words after checking spellcheking the document
         List<String> misspelledWords = mySC.spellCheck(doc);
 
-        if (misspelledWords.size() == 0)
-            System.out.println("\nThere are no misspelled words in file " + doc + ".\n");
+        if (misspelledWords.size() == 0){
+            GUI.output.append("There are no misspelled words in file " + doc + ".\n");
+        }
+//            System.out.println("\nThere are no misspelled words in file " + doc + ".\n");
         else {
-            System.out.println("\nThere are " + misspelledWords.size() + " misspelled words in file " + doc + ".");
+            GUI.output.append("There are " + misspelledWords.size() + " misspelled words in file " + doc + ".\n");
+//            System.out.println("\nThere are " + misspelledWords.size() + " misspelled words in file " + doc + ".");
 
             if (option.equals("-p")) {
                 //DO: Print every misspelled word on a new line
@@ -86,14 +93,17 @@ public class SpellChecker {
                     // close the file writer
                     writer.close();
 
-                    System.out.println("Please see misspelled.txt for a list of the words.");
+                    GUI.output.append("Please see misspelled.txt for a list of the words.\n");
+//                    System.out.println("Please see misspelled.txt for a list of the words.");
                 }
                 catch (IOException e) {
-                    System.out.println("Unable to create a file for the misspelled words!");
+                    GUI.output.append("Unable to create a file for the misspelled words!\n");
+//                    System.out.println("Unable to create a file for the misspelled words!");
                     return;
                 }
 
-            System.out.println("\nHave a nice day!\n");
+            GUI.output.append("\nHave a nice day!\n");
+//            System.out.println("\nHave a nice day!\n");
         }
     }
 }
