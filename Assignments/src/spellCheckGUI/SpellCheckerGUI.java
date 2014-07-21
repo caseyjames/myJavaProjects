@@ -10,12 +10,12 @@ public class SpellCheckerGUI extends JFrame {
     public static void main(String[] args) {
         JFrame topWindow = new JFrame();
         topWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        topWindow.setSize(800, 900);
+        topWindow.setSize(800, 1000);
         int x = 1920 / 2 - 400;
-        int y = 1080 / 2 - 450;
+        int y = 1080 / 2 - 525;
         topWindow.setLocation(x, y);
-        topWindow.add(new GUI());
-        topWindow.pack();
+        GUI mainG = new GUI();
+        topWindow.add(mainG);
         topWindow.setVisible(true);
     }
 }

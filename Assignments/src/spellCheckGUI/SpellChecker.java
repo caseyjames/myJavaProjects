@@ -70,17 +70,18 @@ public class SpellChecker {
         List<String> misspelledWords = mySC.spellCheck(doc);
 
         if (misspelledWords.size() == 0){
-            GUI.output.append("There are no misspelled words in file " + doc + ".\n");
+            GUI.output.setText("There are no misspelled words in file " + doc + ".\n");
         }
 //            System.out.println("\nThere are no misspelled words in file " + doc + ".\n");
         else {
-            GUI.output.append("There are " + misspelledWords.size() + " misspelled words in file " + doc + ".\n");
+            GUI.output.setText("There are " + misspelledWords.size() + " misspelled words in file " + doc + ".\n");
 //            System.out.println("\nThere are " + misspelledWords.size() + " misspelled words in file " + doc + ".");
 
             if (option.equals("-p")) {
                 //DO: Print every misspelled word on a new line
                 for (String word : misspelledWords)
-                    System.out.println(word);
+                        GUI.output.append(word+"\n");
+//                    System.out.println(word);
 
             } else if (option.equals("-f"))
                 try {
