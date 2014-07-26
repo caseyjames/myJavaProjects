@@ -7,6 +7,7 @@ import java.util.Scanner;
 /**
  * Created by nordgran on 7/25/2014.
  */
+@SuppressWarnings("ConstantConditions")
 public class Dictionary {
     private Node[] dictionary;
 
@@ -79,7 +80,7 @@ public class Dictionary {
         }
         if (fileWrite)
             writeFile.println("Created " + i + " transposition alternatives\n");
-
+        
         // for loop for substitution alternatives
         for (i = 0; i < word.length(); i++) {
             for (j = 0; j < 26; j++) {
@@ -110,12 +111,11 @@ public class Dictionary {
                 alternateCount++;
             }
         }
-        if (fileWrite)
+        if (fileWrite) {
             writeFile.println("Created " + (i * j) + " insertion alternatives\n");
-
-        writeFile.println("TOTAL: generated " + alternateCount + " alternative spellings!");
-        writeFile.close();
-
+            writeFile.println("TOTAL: generated " + alternateCount + " alternative spellings!");
+            writeFile.close();
+        }
         return maxFreq;
     }
 
