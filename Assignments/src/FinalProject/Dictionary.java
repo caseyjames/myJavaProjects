@@ -120,7 +120,7 @@ public class Dictionary {
     }
 
     private void add(String newName, int newFreq) {
-        int listIndex = newName.hashCode() % dictionary.length;
+        int listIndex = Math.abs(newName.hashCode() % dictionary.length);
         if (dictionary[listIndex] == null)
             dictionary[listIndex] = new Node(newName, newFreq);
         else {
