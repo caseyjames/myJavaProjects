@@ -5,7 +5,10 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * Created by nordgran on 7/25/2014.
+ *
+ *
+ *
+ *
  */
 @SuppressWarnings("ConstantConditions")
 public class Dictionary {
@@ -25,7 +28,7 @@ public class Dictionary {
 
         while (inputStats.hasNextLine()) {
             lineParse = new Scanner(inputStats.nextLine());
-            nextName = lineParse.next();
+            nextName = lineParse.next().toLowerCase();
             nextFreq = Integer.parseInt(lineParse.next());
             add(nextName, nextFreq);
         }
@@ -34,9 +37,10 @@ public class Dictionary {
     public String spellCheck(String word, boolean fileWrite) {
         if (word == null)
             return "";
+        word = word.toLowerCase();
         int alternateCount = 0;
         String maxFreq = "";
-        int i = 0, j = 0;
+        int i, j = 0;
 
         if (this.contains(word))
             return word;
@@ -171,5 +175,4 @@ public class Dictionary {
             return frequency;
         }
     }
-
 }
