@@ -146,7 +146,7 @@ public class Compressor {
         byte toPrint;
         // traverse each 8 characters in bitString and print byte to file
         while (bitIndex < bitString.length()) {
-            toPrint = Byte.parseByte((bitString.substring(bitIndex,bitIndex+8)),2);
+            toPrint = (byte) Integer.parseInt((bitString.substring(bitIndex,bitIndex+8)),2);
             try {
                 outFile.writeByte(toPrint);
             } catch (IOException e) {

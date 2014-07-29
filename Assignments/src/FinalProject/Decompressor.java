@@ -15,7 +15,7 @@ public class Decompressor {
         dstFile = _dstFile;
 
 
-        // attempt to open the file with FileReader then use BufferedReader
+        // attempt to open the file with FileInputStream then use DataInputStream
         FileInputStream inputStream;
         DataInputStream inFile ;
         try {
@@ -35,7 +35,7 @@ public class Decompressor {
                 nextByte = inFile.readByte();
                 freq = inFile.readInt();
                 byteCount += 5;
-                if (nextByte == (byte) 0 && freq == 0)
+                if (nextByte == 0 && freq == 0)
                     break;
                 pq.add(new CharNode((char) nextByte, freq));
             }
@@ -58,6 +58,7 @@ public class Decompressor {
             right.setParent(parent);
             pq.add(parent);
         }
+        // assign final node in pq as the root node
         CharNode root = pq.deleteMin();
 
         // use file and PrintWriter to open file to print decompressed file to.
