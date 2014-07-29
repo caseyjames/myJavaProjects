@@ -36,7 +36,7 @@ public class Compressor {
 
         // array to count char frequencies in file, charNumbers index is the char code
         int[] charNumbers = new int[256];
-        int nextByte;
+        int nextByte = 0;
 
         // try block increments frequency for charNumbers index equal to char code
         try {
@@ -67,7 +67,8 @@ public class Compressor {
             }
         }
         // add EOF char
-        pq.add(new CharNode((char) -1, 1));
+        charArray[0] = new CharNode((char) -1, 1);
+        pq.add(charArray[0]);
 
         // building the binary trie
         CharNode left;
@@ -134,6 +135,8 @@ public class Compressor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        // add end of file character
+        bitString += charArray[0].getEncoding();
 
         // add remaining bits to make file of complete bytes
         addZeros = 8 - (bitString.length() % 8);

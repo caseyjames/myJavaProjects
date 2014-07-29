@@ -71,19 +71,24 @@ public class Decompressor {
         }
 
         // start reading file again to encode it from beginning
-        String intStr;
+        String byteStr;
         String encoding = "";
         byte[] allBytes = new byte[((int)(srcFile.length()) - byteCount)];
         // first build string 'encoding' of all the rest of the bits in the file
         try {
             inFile.read(allBytes);
+            double bit;
             for (int i = 0; i < allBytes.length; i++) {
-                intStr = Integer.toBinaryString((int) allBytes[i]);
-                while (intStr.length() < 8)
-                    intStr = "0" + intStr;
-                encoding += intStr;
+                byteStr = "";
+                for (int j = 0; j < 8; j++) {
+                    bit = (Math.abs((double) (allBytes[i] >>> j)))%2.0;
+                    if(bit > 0)
+                        byteStr = "1" + byteStr;
+                    else
+                        byteStr = "0" + byteStr;
+                }
+                encoding += byteStr;
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,24 +96,17 @@ public class Decompressor {
         CharNode currentNode = new CharNode(root);
         // use encode string to begin decoding and printing decoded characters to outFile.
         for (int i = 0; i < encoding.length(); i++) {
-            if (encoding.charAt(i) == '0') {
-                if (currentNode.getLeft() != null)
-                    currentNode = currentNode.getLeft();
-                else {
-                    if (currentNode.getChar() == (char) -1)
-                        break;
+            if (encoding.charAt(i) == '0')
+                currentNode = currentNode.getLeft();
+            else
+                currentNode = currentNode.getRight();
+
+            if (currentNode.getLeft() == null) {
+                if (currentNode.getChar() != (char) -1) {
                     outFile.print(currentNode.getChar());
                     currentNode = new CharNode(root);
-                }
-            } else {
-                if (currentNode.getRight() != null)
-                    currentNode = currentNode.getRight();
-                else {
-                    if (currentNode.getChar() == (char) -1)
-                        break;
-                    outFile.print(currentNode.getChar());
-                    currentNode = new CharNode(root);
-                }
+                } else
+                    break;
             }
         }
 
@@ -123,9 +121,9 @@ public class Decompressor {
 
 
         if (!dstFile.isFile())
-            System.out.println(dstFile + " compression was unsuccessful!");
+            System.out.println(dstFile + " decompression was unsuccessful!\n");
         else
-            System.out.println(dstFile + " compression was successful!");
+            System.out.println(dstFile + " decompression was successful!\n");
 
     }
 
