@@ -1,7 +1,8 @@
 package FinalProject;
 
-import java.io.*;
-import java.util.Comparator;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
@@ -14,6 +15,8 @@ import java.util.Scanner;
 public class TextProcessor {
 
     private static Dictionary dictionary;
+    private static Compressor compressor;
+    private static Decompressor decompressor;
 
     public static void main(String[] args0) {
 //        initializeComponents(args0[0]);
@@ -38,7 +41,7 @@ public class TextProcessor {
             if (input.equals("1")) {
                 System.out.println("Please enter a text word: ");
                 input = scanner.next();
-                if( scanner.hasNext()){
+                if (scanner.hasNext()) {
                     input2 = scanner.next();
                 }
                 if (input2 != null && input2.equals("-f"))
@@ -66,19 +69,19 @@ public class TextProcessor {
 
             } else if (input.equals("4")) {
                 System.out.println("Please enter the source file path: ");
-                input = scanner.nextLine();
+                input = scanner.next();
                 File inputFile = new File(input);
                 if (!inputFile.isFile()) {
-                    System.out.println(input + "is invalid for spell correction!\n");
+                    System.out.println(input + "is invalid for decompression!\n");
                     continue;
                 }
                 System.out.println("Please enter the destination file path: ");
-                input2 = scanner.nextLine();
+                input2 = scanner.next();
                 decompressFile(input, input2);
 
             } else if (input.equals("5")) {
                 System.out.println("Please enter the source file path: ");
-                input = scanner.nextLine();
+                input = scanner.next();
                 transmitFile(input, args0[0]);
 
             } else {
@@ -101,6 +104,8 @@ public class TextProcessor {
         }
 
         dictionary = new Dictionary(inputFile, 2000);
+        compressor = new Compressor();
+        decompressor = new Decompressor();
 // This driver method should first create a file from statsFile and check it for validity, then it should instantiates
 // your spell checker component using the file, your compression component, and the device manager that is newly given below.
 // Since your program is interactive, it is best to initialize all three in this method once for the remainder of the life of the program.
@@ -174,179 +179,34 @@ public class TextProcessor {
         if (message == 0) {
             System.out.println(srcFile + " contains words with correct spelling!\n\n");
 //            inputF.delete();
-        }
-        else if (message == 1)
+        } else if (message == 1)
             System.out.println(srcFile + " was corrected successfully!\n\n");
         else
             System.out.println(srcFile + " was corrected, but it contains unknown words!\n\n");
     }
 
     public static void compressFile(String srcFile, String dstFile) {
-        // declare & instantiate input file source
-        File inputFile = new File(srcFile);
-        if (!inputFile.isFile()) {
-            System.out.println(srcFile + "is invalid for spell correction!\n");
+        File inFile = new File(srcFile);
+        File outFile = new File(dstFile);
+        // test that srcFile is valid
+        if (!inFile.isFile()) {
+            System.out.println(srcFile + " is invalid for compression!");
             return;
         }
-        // attempt to open the file with FileReader then use BufferedReader
-        FileReader inputStream;
-        try {
-            inputStream = new FileReader(inputFile);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return;
-        }
-        BufferedReader reader = new BufferedReader(inputStream);
-
-        // array to count char frequencies in file, charNumbers index is the char code
-        int[] charNumbers = new int[256];
-        int nextByte;
-
-        // try block increments frequency for charNumbers index equal to char code
-        try {
-            while ((nextByte = reader.read()) != -1) {
-                charNumbers[nextByte]++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // priority queue to make binary tri
-        PriorityQueueHEAP<CharNode> pq = new PriorityQueueHEAP<CharNode>(new CharNodeComparator());
-        CharNode currentChar;
-        // array to hold CharNode's that represent data for each character in the input file.
-        CharNode[] charArray = new CharNode[256];
-        // loading the priority queue
-        for (int i = 0; i < 256; i++) {
-            if (charNumbers[i] != 0) {
-                currentChar = new CharNode((char) i, charNumbers[i]);
-                charArray[i] = currentChar;
-                pq.add(currentChar);
-            }
-        }
-        // add EOF char
-        pq.add(new CharNode((char) -1, 1));
-
-        // building the binary tri
-        CharNode left;
-        CharNode right;
-        CharNode parent;
-        while (pq.size() > 1) {
-            left = pq.deleteMin();
-            right = pq.deleteMin();
-            parent = new CharNode(left, right, (left.getFreq() + right.getFreq()));
-            left.setParent(parent);
-            right.setParent(parent);
-            pq.add(parent);
-        }
-
-        // use file and PrintWriter to open file to print compressed file to.
-        File outputFile = new File(dstFile);
-        PrintWriter outFile;
-        try {
-            outFile = new PrintWriter(outputFile);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return;
-        }
-
-        // determine each characters encoding & set the value in it's corresponding CharNode
-        String encoding;
-        for (int i = 0; i < 256; i++) {
-            encoding = "";
-            if (charArray[i] != null) {
-                currentChar = charArray[i];
-                outFile.print(currentChar.getChar());
-                outFile.print(currentChar.getFreq());
-                while (currentChar.getParent() != null) {
-                    if (currentChar.getParent().getLeft().getChar() == currentChar.getChar())
-                        encoding = "0" + encoding;
-                    else
-                        encoding = "1" + encoding;
-                    currentChar = currentChar.getParent();
-                }
-                charArray[i].setEncoding(encoding);
-            }
-        }
-        // print end of header characters
-        outFile.print((byte) 0);
-        outFile.print(0);
-
-        // attempt to re-open the file with FileReader then use BufferedReader
-        try {
-            inputStream = new FileReader(inputFile);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return;
-        }
-        reader = new BufferedReader(inputStream);
-
-
-
-        // start reading file again to encode it from beginning
-        String bitString = "";
-        int addZeros = 0;
-        try {
-            while ((nextByte = reader.read()) != -1) {
-                bitString += charArray[nextByte].getEncoding();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // add remaining bits to make file of complete bytes
-        addZeros = 8 - bitString.length()%8;
-        while (addZeros > 0) {
-            bitString = bitString + "0";
-            addZeros--;
-        }
-
-        int bitIndex = 0;
-        byte toPrint;
-        // traverse each character in bitString and print bytes to file
-        while (bitIndex < bitString.length()) {
-            toPrint = 0;
-            for (int i = 0; i < 8; i++) {
-                if (bitString.charAt(bitIndex) == '1'){
-                    toPrint = (byte) (toPrint >>> 1);
-                    toPrint += (byte) 128;
-                }
-                else
-                    toPrint = (byte) (toPrint >>> 1);
-                bitIndex++;
-            }
-            outFile.print((char) toPrint);
-        }
-
-        // close file when all bytes are printed to file.
-        outFile.close();
-
-        // re initialize outputFile to check that it is valid after printed to and closed.
-        outputFile = new File(dstFile);
-
-        if (! outputFile.isFile())
-            System.out.println(dstFile + " compression was unsuccessful!");
-        else
-            System.out.println(dstFile + " compression was successful!");
-
-//            * This driver method should pass the user source and destination file to the file compression part of your program. The method should first check to see if the srcFile is a valid file before passing it to your compressor, if the file is invalid then it should print the following message and return:
-//    <"user srcFile"> is invalid for compression!
-//            * If the file is valid then it should pass the file to your compression program to be compressed in a new file dstFile given by the user.
-//            * After the call for compression returns, this method should check to see if the now compressed dstFile is a valid file, if it is then you should print:
-//    <"user srcFile"> was compressed successfully!
-//            * If the dstFile is actually invalid, meaning that it was not generated by your program or similar problems then you should print:
-//    <"user srcFile"> compression was unsuccessful!
+        // create new compressor class with inFile & outFile, then invoke compress()
+        compressor.compress(inFile, outFile);
     }
 
     public static void decompressFile(String srcFile, String dstFile) {
-//            * This driver method should pass the user source and destination file to the file compression part of your program.
-// The method should first check to see if the srcFile is a valid file before passing it to your compressor, if the file is invalid then it should print the following message and return:
-//    <"user srcFile"> is invalid for compression!
-//            * If the file is valid then it should pass the file to your compression program to be compressed in a new file dstFile given by the user.
-//            * After the call for compression, this method should check to see if the now compressed dstFile is a valid file, if it is then you should print:
-//    <"user srcFile"> was compressed successfully!
-//            * If the dstFile is actually invalid, meaning that it was not generated by your program or similar problems then you should print:
-//    <"user srcFile"> compression was unsuccessful!
+        File inFile = new File(srcFile);
+        File outFile = new File(dstFile);
+        // test that srcFile is valid
+        if (!inFile.isFile()) {
+            System.out.println(srcFile + " is invalid for decompression!");
+            return;
+        }
+        // create new compressor class with inFile & outFile, then invoke compress()
+        decompressor.decompress(inFile, outFile);
     }
 
     public static void transmitFile(String srcFile, String statsFile) {
@@ -356,71 +216,5 @@ public class TextProcessor {
 //    <"user srcFile"> is invalid for file transfer!
     }
 
-    private static class CharNode {
-        private char data;
-        private int freq;
-        private CharNode left;
-        private CharNode right;
-        private CharNode parent;
-        private String encoding;
-
-        public CharNode(char _data, int _freq) {
-            data = _data;
-            freq = _freq;
-        }
-
-        public CharNode(CharNode _left, CharNode _right, int _freq) {
-            freq = _freq;
-            left = _left;
-            right = _right;
-        }
-
-        public char getChar() {
-            return data;
-        }
-
-        public int getFreq() {
-            return freq;
-        }
-
-        public void setParent(CharNode _parent) {
-            parent = _parent;
-        }
-
-        public CharNode getParent() {
-            return parent;
-        }
-
-        public void setEncoding(String str) {
-            encoding = str;
-        }
-
-        public String getEncoding() {
-            return encoding;
-        }
-
-        public CharNode getLeft() {
-            return left;
-        }
-
-        public CharNode getRight() {
-            return right;
-        }
-    }
-
-    private static class CharNodeComparator implements Comparator<CharNode> {
-        public int compare(CharNode o1, CharNode o2) {
-            if (o1.getFreq() > o2.getFreq())
-                return 1;
-            else if (o1.getFreq() < o2.getFreq())
-                return -1;
-            else if (o1.getChar() < o2.getChar())
-                return 1;
-            else if (o1.getChar() > o2.getChar())
-                return -1;
-            else
-                return 0;
-        }
-    }
 
 }

@@ -6,8 +6,7 @@ package FinalProject;
 public class zzz {
 
     public static void main(String[] args) {
-        String str = "11101001";
-        Byte nbyte = Byte.parseByte(str,2);
-        System.out.println(nbyte);
+        int nbyte = 105;
+        System.out.println(Integer.toBinaryString(nbyte));
     }
 }
