@@ -14,24 +14,25 @@ public class Compressor {
         // assign values to srcFile and dstFile
         srcFile = _srcFile;
         dstFile = _dstFile;
-        // PrintWriter to open file to print compressed file to.
-        PrintWriter outFile;
+        // output stream to open file to print compressed file to.
+        FileOutputStream oFile;
         try {
-            outFile = new PrintWriter(dstFile);
+            oFile = new FileOutputStream(dstFile);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return;
         }
+        DataOutputStream outFile = new DataOutputStream(oFile);
 
         // attempt to open the file with FileReader then use BufferedReader
-        FileReader inputStream;
+        FileReader fileIn;
         try {
-            inputStream = new FileReader(srcFile);
+            fileIn = new FileReader(srcFile);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return;
         }
-        BufferedReader reader = new BufferedReader(inputStream);
+        BufferedReader reader = new BufferedReader(fileIn);
 
         // array to count char frequencies in file, charNumbers index is the char code
         int[] charNumbers = new int[256];
@@ -44,6 +45,12 @@ public class Compressor {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        // close the input file
+        try {
+            reader.close();
+            fileIn.close();
+        } catch (IOException e) {
         }
 
         // priority queue to make binary trie
@@ -78,16 +85,20 @@ public class Compressor {
         // determine each characters encoding & set the value in its corresponding CharNode
         String encoding;
         for (int i = 0; i < 256; i++) {
-            encoding = "";
             if (charArray[i] != null) {
                 currentChar = charArray[i];
                 // this portion prints the file header
                 if (currentChar.getChar() != (char) -1) {
-                    outFile.print(currentChar.getChar());
-                    outFile.print(currentChar.getFreq());
+                    try {
+                        outFile.writeByte(currentChar.getChar());
+                        outFile.writeInt(currentChar.getFreq());
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
+                encoding = "";
                 while (currentChar.getParent() != null) {
-                    if (currentChar.getParent().getLeft().getChar() == currentChar.getChar())
+                    if (currentChar.getParent().getLeft() == currentChar)
                         encoding = "0" + encoding;
                     else
                         encoding = "1" + encoding;
@@ -97,23 +108,21 @@ public class Compressor {
             }
         }
         // print end of header characters
-        outFile.print((byte) 0);
-        outFile.print(0);
-
         try {
-            inputStream.close();
-        } catch (Exception e) {
+            outFile.writeByte(0);
+            outFile.writeInt(0);
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
         // attempt to re-open the file with FileReader then use BufferedReader
         try {
-            inputStream = new FileReader(srcFile);
+            fileIn = new FileReader(srcFile);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return;
         }
-        reader = new BufferedReader(inputStream);
+        reader = new BufferedReader(fileIn);
 
         // start reading file again to encode it from beginning
         String bitString = "";
@@ -127,7 +136,7 @@ public class Compressor {
         }
 
         // add remaining bits to make file of complete bytes
-        addZeros = 8 - bitString.length() % 8;
+        addZeros = 8 - (bitString.length() % 8);
         while (addZeros > 0) {
             bitString = bitString + "0";
             addZeros--;
@@ -135,23 +144,23 @@ public class Compressor {
 
         int bitIndex = 0;
         byte toPrint;
-        // traverse each character in bitString and print bytes to file
+        // traverse each 8 characters in bitString and print byte to file
         while (bitIndex < bitString.length()) {
-            toPrint = 0;
-            for (int i = 0; i < 8; i++) {
-                if (bitString.charAt(bitIndex) == '1') {
-                    toPrint = (byte) (toPrint >>> 1);
-                    toPrint += (byte) 128;
-                } else
-                    toPrint = (byte) (toPrint >>> 1);
-                bitIndex++;
+            toPrint = Byte.parseByte((bitString.substring(bitIndex,bitIndex+8)),2);
+            try {
+                outFile.writeByte(toPrint);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
             }
-            outFile.print((char) toPrint);
+            bitIndex += 8;
         }
 
         // close file when all bytes are printed to file.
-        outFile.close();
-
+        try {
+            outFile.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
 
         if (!dstFile.isFile())
             System.out.println(dstFile + " compression was unsuccessful!");

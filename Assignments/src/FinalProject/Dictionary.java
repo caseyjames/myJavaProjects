@@ -67,8 +67,7 @@ public class Dictionary {
         if (fileWrite) {
             try {
                 writeFile = new PrintWriter("" + word + ".txt");
-                writeFile.write("User string: " + word);
-                writeFile.println('\n');
+                writeFile.print("User string: " + word+ "\n\n");
             } catch (Exception e) {
                 System.err.println("Unable to write file!");
                 return "";
