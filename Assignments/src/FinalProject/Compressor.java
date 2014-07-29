@@ -166,9 +166,9 @@ public class Compressor {
         }
 
         if (!dstFile.isFile())
-            System.out.println(dstFile + " compression was unsuccessful!");
+            System.out.println(dstFile + " compression was unsuccessful!\n");
         else
-            System.out.println(dstFile + " compression was successful!");
+            System.out.println(dstFile + " compression was successful!\n");
     }
 
     private static class CharNode {
