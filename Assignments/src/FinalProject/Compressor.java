@@ -82,8 +82,10 @@ public class Compressor {
             if (charArray[i] != null) {
                 currentChar = charArray[i];
                 // this portion prints the file header
-                outFile.print(currentChar.getChar());
-                outFile.print(currentChar.getFreq());
+                if (currentChar.getChar() != (char) -1) {
+                    outFile.print(currentChar.getChar());
+                    outFile.print(currentChar.getFreq());
+                }
                 while (currentChar.getParent() != null) {
                     if (currentChar.getParent().getLeft().getChar() == currentChar.getChar())
                         encoding = "0" + encoding;

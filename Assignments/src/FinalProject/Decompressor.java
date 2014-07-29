@@ -35,7 +35,7 @@ public class Decompressor {
                 nextByte = inFile.readByte();
                 freq = inFile.readInt();
                 byteCount += 5;
-                if (nextByte == 0 && freq == 0)
+                if (nextByte == (byte) 0 && freq == 0)
                     break;
                 pq.add(new CharNode((char) nextByte, freq));
             }

@@ -60,13 +60,15 @@ public class Dictionary {
         int alternateCount = 0;
         String maxFreq = "";
         int i, j = 0;
-        PrintWriter writeFile = null;
+
 
         //setup PrintWriter
+        PrintWriter writeFile = null;
         if (fileWrite) {
             try {
                 writeFile = new PrintWriter("" + word + ".txt");
-                writeFile.print("User string: " + word + "\n\n");
+                writeFile.write("User string: " + word);
+                writeFile.println('\n');
             } catch (Exception e) {
                 System.err.println("Unable to write file!");
                 return "";
